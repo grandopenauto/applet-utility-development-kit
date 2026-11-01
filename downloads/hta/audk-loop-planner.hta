@@ -1,0 +1,41 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<title>AUDK Loop Planner</title>
+<HTA:APPLICATION ID="AUDKLoop" APPLICATIONNAME="AUDK Loop Planner" BORDER="thin" CAPTION="yes" SINGLEINSTANCE="yes" SCROLL="yes" />
+<style type="text/css">
+body{font:14px Segoe UI,Arial;background:#f3f6fb;color:#20324b;margin:20px}h1{font-size:21px;margin-bottom:5px}p{color:#43546d}fieldset{border:1px solid #d1d9e6;background:white;padding:14px;margin-bottom:12px;border-radius:8px}label{display:inline-block;margin:7px 12px 7px 0}input,select,textarea{font:14px Consolas,monospace;padding:6px;border:1px solid #aab6c6}input{width:70px}input.wide{width:150px}button{background:#2152a0;border:0;border-radius:6px;color:white;padding:9px 16px;cursor:pointer}textarea{display:block;width:97%;height:170px;margin-top:10px}#summary{padding:10px;background:#e4eefc}small{color:#53657c}
+</style>
+<script language="JScript" type="text/javascript">
+function value(id){return document.getElementById(id).value;}
+function integer(id){var v=value(id);if(!/^-?\d+$/.test(v))throw new Error(id+' must be an integer');var n=Number(v);if(!isFinite(n)||Math.abs(n)>1000000)throw new Error(id+' out of range');return n;}
+function count(a,b,s){if(s===0||(b-a)*s<0)throw new Error('Step must move toward end and cannot be zero');return Math.ceil(Math.abs(b-a)/Math.abs(s));}
+function variable(n){if(!/^[A-Za-z_][A-Za-z_0-9]{0,39}$/.test(n)||n==='constructor'||n==='prototype'||n==='__proto__')throw new Error('Variable name is invalid');return n;}
+function build(){
+try{
+ var a=integer('outerStart'),b=integer('outerEnd'),s=integer('outerStep');
+ var c=integer('innerStart'),d=integer('innerEnd'),t=integer('innerStep');
+ var x=variable(value('outerName')),y=variable(value('innerName'));if(x===y)throw new Error('Variable names must be different');
+ var n=count(a,b,s)*count(c,d,t);if(n>5000)throw new Error('Maximum 5,000 iterations');
+ var item={name:'AUDK Windows loop plan',outer:{name:x,start:a,end:b,step:s},inner:{name:y,start:c,end:d,step:t},operation:value('operation'),branchBy:value('branch')};
+ document.getElementById('output').value=JSON.stringify(item,null,2);
+ document.getElementById('summary').innerText=n+' iterations · Ready to copy into AUDK Studio Macro JSON';
+}catch(e){document.getElementById('summary').innerText='Configuration error: '+e.message;document.getElementById('output').value='';}
+}
+function selectJson(){var e=document.getElementById('output');e.focus();e.select();}
+</script>
+</head>
+<body onload="build()">
+<h1>AUDK · Loop Planner</h1><p>Offline Windows companion · Build a nested-loop macro. No network access, file modification, or system commands.</p>
+<fieldset><legend>Outer loop</legend>
+<label>Variable <input class="wide" id="outerName" value="i" /></label><label>Start <input id="outerStart" value="1" /></label><label>End exclusive <input id="outerEnd" value="5" /></label><label>Step <input id="outerStep" value="1" /></label>
+</fieldset>
+<fieldset><legend>Inner loop</legend>
+<label>Variable <input class="wide" id="innerName" value="j" /></label><label>Start <input id="innerStart" value="1" /></label><label>End exclusive <input id="innerEnd" value="4" /></label><label>Step <input id="innerStep" value="1" /></label>
+</fieldset>
+<fieldset><legend>Operation</legend><label>Calculate <select id="operation"><option value="product">Multiply</option><option value="sum">Add</option><option value="difference">Difference</option><option value="pair">Pair</option></select></label>
+<label>Branch <select id="branch"><option value="sumParity">Parity switch</option><option value="none">All rows</option></select></label></fieldset>
+<button onclick="build()">Build macro</button> <button onclick="selectJson()">Select JSON</button><div id="summary"></div><textarea id="output" readonly="readonly"></textarea>
+<small>Inspect this .hta before running. HTA is a legacy high-trust Windows application format, and execution may be blocked by your organization's policy. This app uses no ActiveX, remote scripts, or shell commands.</small>
+</body>
+</html>

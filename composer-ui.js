@@ -135,3 +135,6 @@ $('flow-load').addEventListener('click',()=>{try{const raw=localStorage.getItem(
 $('flow-copy-code').addEventListener('click',async()=>{try{if(!code)throw Error('Fix configuration first');await navigator.clipboard.writeText(code);status('Generated standalone JavaScript copied.')}catch(e){status(e.message,true)}});
 $('flow-run').addEventListener('click',()=>render());
 showForm();render();
+
+// Allow reviewed Factory pipeline templates to open in the graphical composer.
+window.addEventListener('audk:load-pipeline',e=>{try{validatePipeline(e.detail);config=clone(e.detail);showForm();render();status('Factory applet loaded into Composer. No compilation necessary.')}catch(err){status(err.message,true)}});

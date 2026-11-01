@@ -1,4 +1,4 @@
-# Applet Utility Development Kit (AUDK) — v0.2 working prototype
+# Applet Utility Development Kit (AUDK) — v0.3 working prototype
 
 **Build a function once. Configure it visually. Execute it as a macro. Export the code when needed.**
 
@@ -18,9 +18,22 @@ The live GitHub Pages workbench now has an **Applet Composer** alongside the ori
 
 Note: this is a **declarative, sequential pipeline**, not yet a full visual directed-graph editor or an autonomous applet producer. Publishing generated applets is still a review-gated future milestone.
 
+## AUDK v0.3 — Applet Factory and Windows companion utilities
+
+The **Applet Factory** wizard now generates reviewed-template manifests using a shared, browser-safe JavaScript module. Templates include nested loops, Digital CrossDock door/slot matrices, and inventory thresholds. Each generated manifest is versioned, validated, run immediately without compilation, and accompanied by portable JavaScript. Factory output is **downloaded to the user's browser**, not automatically pushed to GitHub. A pipeline template can be opened in the Applet Composer for further changes. Two tested declarative pipeline examples are included in `library/`.
+
+**Windows HTA companion applications:**
+
+- `downloads/hta/audk-loop-planner.hta` — configure bounded nested-loop JSON on Windows.
+- `downloads/hta/audk-slot-matrix.hta` — prepare a Digital CrossDock door/slot pipeline JSON.
+
+Both are small, offline-only, self-contained Windows HTML Applications using legacy JScript syntax. They have **no network, shell, ActiveX, registry writes, or filesystem operations**. Download and review source before executing. HTA applications run with high privileges relative to browser pages, are not a recommended format for untrusted downloads, and may be blocked by your Windows security policy. Microsoft removed direct opening of HTA files from IE/Edge IE-mode download dialogs in 2024; users must save and open manually on compatible Windows installations. The HTAs have not been runtime-tested on a Windows machine; tests verify source constraints and generated macro conventions. A signed, sandboxed modern desktop app is a preferable longer-term distribution path.
+
+New local-only API: `POST /api/factory/preview` returns `{entry,preview,code}` for a validated factory template. No remote repository mutation or compilation occurs.
+
 ## What works today
 
-- Interactive responsive browser studio with seven tabs: **Configure, Visualize, View Code, Macro JSON, Test Lab, API**.
+- Interactive responsive browser studio with nine tabs: **Configure, Visualize, Applet Composer, Applet Factory, Windows HTA Apps, View Code, Macro JSON, Test Lab, API**.
 - A nested `for`-loop wizard: variable names, start/end/step, inner/outer loops, operations, optional `switch` branch based on sum parity.
 - Interactive execution tracing and stepping forward/backward through each iteration.
 - Save a macro as JSON, edit its JSON, load it into the wizard, and execute **without recompiling**.
@@ -29,7 +42,7 @@ Note: this is a **declarative, sequential pipeline**, not yet a full visual dire
 - Local-only HTTP API and optional Express 5 adapter. Built-in input validation and maximum execution bounds.
 - Automated Node.js tests, including a generated-code/interpreter equivalence test, and a GitHub Actions workflow.
 
-**Not yet built:** arbitrary applet generation by AI, autonomous publishing, arbitrary OS-function access, file watchers, visual drag-and-drop graph composition, mobile-native builds, remote deployment, compilation pipeline, real-time file change subscriptions, and authentication for public-hosted multi-user systems. The v0.1 applet factory is deterministic/template-based; it does **not** generate arbitrary code from a prompt. These are future work, not claimed capabilities.
+**Not yet built:** AI-based arbitrary applet generation, autonomous publishing, arbitrary OS-function access, file watchers, visual drag-and-drop graph composition, mobile-native builds, remote deployment, compilation pipeline, real-time file change subscriptions, and authentication for public-hosted multi-user systems. The v0.1 applet factory is deterministic/template-based; it does **not** generate arbitrary code from a prompt. These are future work, not claimed capabilities.
 
 ## Run locally (no dependencies required)
 
@@ -71,6 +84,7 @@ The CLI creates `library/my-first-applet.json`. Every applet is a versioned mani
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/api/health` | Check local server |
+| POST | `/api/factory/preview` | Build, validate, and preview an applet manifest (no publication) |
 | GET | `/api/applets` | List registered applets |
 | POST | `/api/validate` | Validate a macro |
 | POST | `/api/run` | Execute a macro and return trace rows |

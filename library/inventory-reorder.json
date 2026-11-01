@@ -1,0 +1,15 @@
+{
+  "id": "inventory-reorder",
+  "kind": "pipeline",
+  "version": "0.3.0",
+  "description": "Transform bounded stock quantities, filter and aggregate a low-inventory total",
+  "config": {
+    "schema": "audk.pipeline.v1", "name": "Inventory reorder diagnostic",
+    "input": {"type":"range","field":"quantity","start":1,"end":7,"step":1},
+    "steps": [
+      {"id":"scaled-stock","type":"map","field":"quantity","outputField":"stock","operation":"multiply","value":2},
+      {"id":"low-stock","type":"filter","field":"stock","operator":"lt","value":12},
+      {"id":"stock-total","type":"aggregate","field":"stock","operation":"sum","outputField":"stockTotal"}
+    ]
+  }
+}

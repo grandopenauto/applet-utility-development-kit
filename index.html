@@ -15,10 +15,10 @@
       <div class="side-link">⎇ <span>Macro Runtime</span></div>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.2.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.3.0 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> Applet Studio <span>/</span> <strong>Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.2</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> Applet Studio <span>/</span> <strong>Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.3</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
         <div class="workspace-head"><div><h2>Nested Loop Wizard</h2><p>Configure the applet, then run it locally in your browser. No server access required.</p></div><div class="actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
@@ -26,6 +26,8 @@
           <button class="tab active" data-tab="configure">⚙ Configure</button>
           <button class="tab" data-tab="visualize">▦ Visualize</button>
           <button class="tab" data-tab="compose">⛓ Applet Composer</button>
+          <button class="tab" data-tab="factory">✦ Applet Factory</button>
+          <button class="tab" data-tab="windows">▣ Windows HTA Apps</button>
           <button class="tab" data-tab="code">⌘ View code</button>
           <button class="tab" data-tab="macro">{} Macro JSON</button>
           <button class="tab" data-tab="tests">✓ Test lab</button>
@@ -62,15 +64,58 @@
             </div>
           </div>
         </section>
+
+        <section id="panel-factory" class="panel">
+          <div class="panel-header"><div><h3>Applet Factory <span class="tag">New · v0.3</span></h3><p>Create reusable versioned applet manifests from validated templates, preview output and generated JavaScript, then submit reviewed additions to the library.</p></div><button id="factory-download" type="button" class="btn primary">↓ Download applet manifest</button></div>
+          <div id="factory-notice" class="notice" role="status" aria-live="polite">Configure the applet below.</div>
+          <div class="flow-grid">
+            <form id="factory-form" class="flow-editor" autocomplete="off">
+              <div class="flow-group"><div class="flow-group-title"><strong>01 · Identify your applet</strong><span>Validated reusable component</span></div>
+                <label>Template<select id="factory-template" aria-label="Applet template"></select></label>
+                <div class="input-grid two"><label>Unique ID (kebab-case)<input id="factory-id" value="my-crossdock-matrix" maxlength="50" required></label><label>Display name<input id="factory-name" value="CrossDock appointment matrix" maxlength="80" required></label></div>
+                <label>Description<input id="factory-description" value="Reusable door and time-slot routing matrix for demonstrations" maxlength="300" required></label>
+              </div>
+              <div class="flow-group"><div class="flow-group-title"><strong>02 · Configuration wizard</strong><span>Use an exclusive end bound</span></div>
+                <div class="input-grid three"><label>Start<input id="factory-start" type="number" value="1"></label><label>End (exclusive)<input id="factory-end" type="number" value="5"></label><label>Step<input id="factory-step" type="number" value="1"></label></div>
+                <div id="factory-inner-wrap" hidden><label>Inner iterations<input id="factory-inner" type="number" value="3" min="1" max="20"></label></div>
+                <div id="factory-slot-wrap"><label>Time slots (HH:MM, comma-separated)<input id="factory-slots" value="08:00,09:00,10:00" aria-label="Time slots"></label></div>
+                <div id="factory-minimum-wrap"><label>Minimum eligible door<input id="factory-minimum" type="number" value="2"></label></div>
+                <div id="factory-inventory-wrap" hidden><div class="input-grid two"><label>Stock multiplier<input id="factory-multiplier" type="number" value="2"></label><label>Low-stock threshold<input id="factory-threshold" type="number" value="12"></label></div></div>
+                <button type="submit" class="btn secondary">✓ Validate and preview</button>
+              </div>
+              <div class="flow-safety">Generated applets are local, declarative and bounded · No submitted source execution · No direct GitHub publishing</div>
+            </form>
+            <div class="flow-output">
+              <div class="stat-grid flow-stats"><div class="stat"><span>Output rows</span><strong id="factory-output-count">—</strong></div><div class="stat"><span>Applet kind</span><strong id="factory-output-kind">—</strong></div></div>
+              <div class="flow-view-tabs"><button type="button" class="active" data-factory-view="preview">Preview</button><button type="button" data-factory-view="json">Manifest JSON</button><button type="button" data-factory-view="code">View code</button></div>
+              <div data-factory-output="preview" id="factory-preview"></div>
+              <pre data-factory-output="json" hidden class="codebox" id="factory-output-json"></pre>
+              <pre data-factory-output="code" hidden class="codebox" id="factory-output-code"></pre>
+              <div class="flow-toolbar-actions"><button id="factory-compose" type="button" class="btn secondary">Open in Composer</button><button id="factory-copy-code" type="button" class="btn secondary">Copy JavaScript</button></div>
+              <p class="muted">The Factory produces source artifacts locally. GitHub publication is intentionally review-gated; it does not auto-commit generated code.</p>
+            </div>
+          </div>
+        </section>
+        <section id="panel-windows" class="panel">
+          <div class="panel-header"><div><h3>Windows HTA Companion Utilities <span class="tag">New · v0.3</span></h3><p>Download small standalone Windows configuration wizards. They create AUDK-compatible JSON that you can copy into the main studio.</p></div></div>
+          <div class="notice-banner"><strong>Security and compatibility:</strong> HTA is a legacy Windows high-trust application format, not an ordinary webpage. Review the source before opening, run only trusted files, and respect organizational security policies. These two samples are offline-only and contain no ActiveX, shell access, file writes or network requests.</div>
+          <div class="hta-grid">
+            <article class="hta-card"><div class="eyebrow">OFFLINE · WINDOWS</div><h3>Nested Loop Planner</h3><p>Configure inner and outer loops, calculate bounded iteration counts, and copy the JSON macro to the AUDK nested-loop wizard.</p><a class="btn primary" href="./downloads/hta/audk-loop-planner.hta" download="audk-loop-planner.hta">↓ Download .HTA</a><a class="hta-source" href="https://github.com/grandopenauto/applet-utility-development-kit/blob/main/downloads/hta/audk-loop-planner.hta">Inspect source</a></article>
+            <article class="hta-card"><div class="eyebrow">OFFLINE · WINDOWS</div><h3>Slot Matrix Planner</h3><p>Choose doors and time slots, define eligibility rules, and copy a pipeline macro into the AUDK Applet Composer.</p><a class="btn primary" href="./downloads/hta/audk-slot-matrix.hta" download="audk-slot-matrix.hta">↓ Download .HTA</a><a class="hta-source" href="https://github.com/grandopenauto/applet-utility-development-kit/blob/main/downloads/hta/audk-slot-matrix.hta">Inspect source</a></article>
+          </div>
+          <p class="muted">The downloadable HTAs target compatible Windows installations with HTA execution enabled. They are not supported by macOS or Linux, and are not embedded in this browser page. Native alternatives may replace HTAs later.</p>
+        </section>
+
         <section id="panel-code" class="panel"><div class="panel-header"><div><h3>Generated JavaScript</h3><p>Readable, portable code. Edit or embed it in your project.</p></div><button id="copy-code" class="btn secondary">Copy code</button></div><pre id="code-output" class="codebox">Run the applet to generate code.</pre></section>
         <section id="panel-macro" class="panel"><div class="panel-header"><div><h3>Macro configuration</h3><p>A versionable JSON description interpreted directly by the runtime.</p></div><button id="copy-macro" class="btn secondary">Copy JSON</button></div><textarea id="macro-output" class="macrobox" spellcheck="false" aria-label="Macro JSON"></textarea><div class="editor-footer"><span>Change the JSON and apply it without recompiling software.</span><button id="apply-macro" class="btn secondary">Apply JSON to wizard</button></div></section>
         <section id="panel-tests" class="panel"><div class="panel-header"><div><h3>Built-in Test Laboratory</h3><p>Validate execution bounds, output count, and branch tracing.</p></div><button id="run-tests" class="btn primary">✓ Run checks</button></div><div id="test-results" class="test-results muted">No tests run yet.</div></section>
-        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
+        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>POST /api/factory/preview</code><span>Generate and validate an applet manifest without publishing it</span></div><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
       </section>
       <footer>AUDK · Browser demo · Powered by reusable declarative applets · <a href="https://digitalcrossdock.com">Digital CrossDock</a></footer>
     </main>
   </div>
   <script type="module" src="./pages-app.js"></script>
   <script type="module" src="./composer-ui.js"></script>
+  <script type="module" src="./factory-ui.js"></script>
 </body>
 </html>

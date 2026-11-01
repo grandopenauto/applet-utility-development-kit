@@ -1,0 +1,39 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<title>AUDK Slot Matrix Planner</title>
+<HTA:APPLICATION ID="AUDKSlots" APPLICATIONNAME="AUDK Slot Matrix Planner" BORDER="thin" CAPTION="yes" SINGLEINSTANCE="yes" SCROLL="yes" />
+<style type="text/css">
+body{font:14px Segoe UI,Arial;background:#f3f6fb;color:#20324b;margin:20px}h1{font-size:21px}fieldset{background:white;border:1px solid #cad5e4;padding:15px;border-radius:8px}label{display:inline-block;margin:8px}input,textarea{font:14px Consolas,monospace;padding:7px;border:1px solid #acb9c9}input{width:80px}input.wide{width:220px}button{background:#2152a0;border:0;color:#fff;border-radius:6px;padding:9px 16px;margin-top:12px}#summary{background:#e4eefc;margin-top:10px;padding:10px}textarea{display:block;margin-top:10px;width:97%;height:240px}small{color:#53657c}
+</style>
+<script language="JScript" type="text/javascript">
+function val(id){return document.getElementById(id).value;}
+function num(id){var v=val(id);if(!/^-?\d+$/.test(v))throw new Error(id+' must be an integer');var n=Number(v);if(Math.abs(n)>1000)throw new Error('Door number out of range');return n;}
+function build(){
+try{
+ var a=num('first'),b=num('last'),m=num('minimum');if(b<a||b-a>250)throw new Error('Choose 1–250 doors in ascending order');
+ var slots=val('slots').split(','),clean=[],seen={};
+ if(slots.length<1||slots.length>20)throw new Error('Use 1–20 time slots');
+ for(var i=0;i<slots.length;i++){var s=slots[i].replace(/^\s+|\s+$/g,'');if(!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(s)||seen[s])throw new Error('Use unique HH:MM slots');seen[s]=true;clean.push(s);}
+ if((b-a+1)*clean.length>5000)throw new Error('Maximum 5,000 combinations');
+ var cfg={schema:'audk.pipeline.v1',name:'Digital CrossDock slot matrix',input:{type:'range',field:'door',start:a,end:b+1,step:1},steps:[
+ {id:'slot-grid',type:'crossJoin',field:'slot',values:clean},
+ {id:'eligible-doors',type:'filter',field:'door',operator:'gte',value:m},
+ {id:'lane-label',type:'switch',field:'door',outputField:'lane',mode:'parity'},
+ {id:'sort-doors',type:'sort',field:'door',direction:'asc'}]};
+ document.getElementById('output').value=JSON.stringify(cfg,null,2);
+ document.getElementById('summary').innerText=((b-a+1)*clean.length)+' candidate door/slot pairs · Copy JSON into AUDK Applet Composer';
+}catch(e){document.getElementById('summary').innerText='Configuration error: '+e.message;document.getElementById('output').value='';}
+}
+function selectJson(){var el=document.getElementById('output');el.focus();el.select();}
+</script>
+</head>
+<body onload="build()">
+<h1>AUDK · Slot Matrix Planner</h1><p>Offline Windows companion for illustrative Digital CrossDock routing scenarios. No live scheduling or server access.</p>
+<fieldset><legend>Configure door/slot matrix</legend>
+<label>First door <input id="first" value="1" /></label><label>Last door <input id="last" value="4" /></label><label>Minimum eligible <input id="minimum" value="2" /></label><label>Time slots <input class="wide" id="slots" value="08:00,09:00,10:00" /></label>
+</fieldset>
+<button onclick="build()">Build macro</button> <button onclick="selectJson()">Select JSON</button><div id="summary"></div><textarea id="output" readonly="readonly"></textarea>
+<small>Review the source before running. HTAs use an older Windows high-trust runtime and may be restricted by security policy. No external scripts, ActiveX, shell commands or file writes.</small>
+</body>
+</html>

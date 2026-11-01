@@ -1,0 +1,16 @@
+{
+  "id": "digital-crossdock-routing",
+  "kind": "pipeline",
+  "version": "0.3.0",
+  "description": "Illustrative door/slot combinations with eligibility and lane classification",
+  "config": {
+    "schema": "audk.pipeline.v1", "name": "Digital CrossDock door-slot routing",
+    "input": {"type": "range", "field": "door", "start": 1, "end": 5, "step": 1},
+    "steps": [
+      {"id":"slot-grid","type":"crossJoin","field":"slot","values":["08:00","09:00","10:00"]},
+      {"id":"eligible-doors","type":"filter","field":"door","operator":"gte","value":2},
+      {"id":"lane-label","type":"switch","field":"door","outputField":"lane","mode":"parity"},
+      {"id":"sort-doors","type":"sort","field":"door","direction":"asc"}
+    ]
+  }
+}

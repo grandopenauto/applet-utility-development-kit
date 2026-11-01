@@ -1,25 +1,136 @@
-import {executeMacro,validateMacro,generateJavaScript,checkMacro} from './src/engine.mjs';
-const $=id=>document.getElementById(id),wizard=$('wizard'),notice=$('notice');
-let rows=[],cursor=0,code='';
-const names=['macro-name','outer-name','outer-start','outer-end','outer-step','inner-name','inner-start','inner-end','inner-step','operation','branchBy'];
-function form(){const v=n=>wizard.elements.namedItem(n).value,loop=p=>({name:v(p+'-name'),start:Number(v(p+'-start')),end:Number(v(p+'-end')),step:Number(v(p+'-step'))});return {name:v('macro-name'),outer:loop('outer'),inner:loop('inner'),operation:v('operation'),branchBy:v('branchBy')}}
-function setForm(m){const v={'macro-name':m.name,'outer-name':m.outer.name,'outer-start':m.outer.start,'outer-end':m.outer.end,'outer-step':m.outer.step,'inner-name':m.inner.name,'inner-start':m.inner.start,'inner-end':m.inner.end,'inner-step':m.inner.step,operation:m.operation,branchBy:m.branchBy};for(const n of names)wizard.elements.namedItem(n).value=v[n];$('macro-output').value=JSON.stringify(m,null,2)}
-function msg(v,err=false){notice.textContent=v;notice.classList.toggle('error',err)}
-function tab(v){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===v));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+v))}
-document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));
-function el(type,v){const x=document.createElement(type);x.textContent=String(v);return x}
-function focusRow(){const row=rows[cursor];$('trace-position').textContent=row?'Iteration '+(cursor+1)+' of '+rows.length:'No iteration';$('selected-trace').textContent=row?'Variables: '+Object.entries(row).filter(([k])=>!['index','result','branch'].includes(k)).map(([k,v])=>k+' = '+v).join(' · ')+' → result = '+row.result+' · switch: '+row.branch:'No rows emitted';$('trace-body').querySelectorAll('tr').forEach(t=>t.classList.toggle('selected-row',Number(t.dataset.index)===cursor))}
-function run(open=true){try{const m=form(),d=executeMacro(m);rows=d.rows;cursor=0;$('stat-rows').textContent=d.metadata.rows.toLocaleString();$('stat-outer').textContent=d.metadata.outerIterations.toLocaleString();$('stat-inner').textContent=d.metadata.innerIterations.toLocaleString();$('iteration-label').textContent=d.metadata.rows+' steps';$('trace-head').replaceChildren(...['#',m.outer.name,m.inner.name,'Result','Switch branch'].map(x=>el('th',x)));$('trace-body').replaceChildren();rows.slice(0,150).forEach((r,ix)=>{const tr=el('tr','');tr.dataset.index=ix;tr.replaceChildren(...[r.index,r[m.outer.name],r[m.inner.name],r.result,r.branch].map(x=>el('td',x)));tr.addEventListener('click',()=>{cursor=ix;focusRow()});$('trace-body').appendChild(tr)});$('trace-limit').textContent=rows.length>150?'Showing the first 150 rows. Export the macro for further use.':'';focusRow();code=generateJavaScript(m);$('code-output').textContent=code;$('macro-output').value=JSON.stringify(m,null,2);msg('Success: '+rows.length+' iterations executed locally in your browser. No compilation.');if(open)tab('visualize')}catch(e){msg(e.message,true)}}
-$('run').addEventListener('click',()=>run());
-$('previous').addEventListener('click',()=>{cursor=Math.max(0,cursor-1);focusRow()});
-$('next').addEventListener('click',()=>{cursor=Math.min(rows.length-1,cursor+1);focusRow()});
-$('run-tests').addEventListener('click',()=>{const box=$('test-results');box.replaceChildren();try{const d=checkMacro(form());d.checks.forEach(t=>{const e=el('div',(t.passed?'✓ ':'✕ ')+t.name);e.className='test-item';box.appendChild(e)});msg('Self-test: '+d.checks.filter(c=>c.passed).length+'/'+d.checks.length+' checks passed')}catch(e){msg(e.message,true)}});
-$('apply-macro').addEventListener('click',()=>{try{const m=JSON.parse($('macro-output').value);validateMacro(m);setForm(m);tab('configure');msg('Macro applied. No recompilation required.')}catch(e){msg(e.message,true)}});
-$('download').addEventListener('click',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(form(),null,2)+'\n'],{type:'application/json'}));a.download='audk-macro.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
-async function copy(v){try{await navigator.clipboard.writeText(v);msg('Copied.')}catch{msg('Select the text and copy manually.',true)}}
-$('copy-code').addEventListener('click',()=>copy(code));
+import {executeMacro, validateMacro, generateJavaScript, checkMacro} from './src/engine.mjs';
+const $ = id => document.getElementById(id);
+const wizard = $('wizard');
+const notice = $('notice');
+let currentRows = [];
+let currentTrace = 0;
+let registry = [];
+let running = false;
+let generatedCode = '';
+const fields = ['macro-name','outer-name','outer-start','outer-end','outer-step','inner-name','inner-start','inner-end','inner-step','operation','branchBy'];
+
+function getForm() {
+  const value = name => wizard.elements.namedItem(name).value;
+  const loop = part => ({name:value(`${part}-name`),start:Number(value(`${part}-start`)),end:Number(value(`${part}-end`)),step:Number(value(`${part}-step`))});
+  return {name:value('macro-name'),outer:loop('outer'),inner:loop('inner'),operation:value('operation'),branchBy:value('branchBy')};
+}
+function setForm(macro){
+  const values={'macro-name':macro.name,'outer-name':macro.outer.name,'outer-start':macro.outer.start,'outer-end':macro.outer.end,'outer-step':macro.outer.step,'inner-name':macro.inner.name,'inner-start':macro.inner.start,'inner-end':macro.inner.end,'inner-step':macro.inner.step,operation:macro.operation,branchBy:macro.branchBy};
+  for(const field of fields) wizard.elements.namedItem(field).value=values[field];
+  $('macro-output').value=JSON.stringify(macro,null,2);
+}
+function setNotice(message,error=false){notice.textContent=message;notice.classList.toggle('error',error);}
+// GitHub Pages is static. Execute declarative applets entirely in this browser.
+async function post(path, body) {
+  switch (path) {
+    case '/api/run': return executeMacro(body);
+    case '/api/validate': return { valid:true, metadata:validateMacro(body) };
+    case '/api/code': return { source:generateJavaScript(body) };
+    case '/api/test': return checkMacro(body);
+    default: throw new Error('This endpoint is available only from the local Node.js server');
+  }
+}
+function showPanel(tab){
+  for (const button of document.querySelectorAll('[data-tab]')) button.classList.toggle('active',button.dataset.tab===tab);
+  for (const panel of document.querySelectorAll('.panel'))panel.classList.toggle('active',panel.id===`panel-${tab}`);
+}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.tab)));
+
+function buildElement(tag,text,cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(cls)el.className=cls;return el;}
+function showTrace(){
+  const row=currentRows[currentTrace];
+  if(!row){$('trace-position').textContent='No iteration';$('selected-trace').textContent='No rows emitted.';return;}
+  $('trace-position').textContent=`Iteration ${currentTrace+1} of ${currentRows.length}`;
+  $('selected-trace').textContent=`Variables: ${Object.entries(row).filter(([k])=>!['index','result','branch'].includes(k)).map(([k,v])=>`${k} = ${v}`).join('   ·   ')}   →   result = ${row.result}   ·   switch: ${row.branch}`;
+  for(const tr of $('trace-body').children)tr.classList.toggle('selected-row',Number(tr.dataset.index)===currentTrace);
+}
+function renderResults(data,macro){
+  currentRows=data.rows;currentTrace=0;
+  $('stat-rows').textContent=data.metadata.rows.toLocaleString();
+  $('stat-outer').textContent=data.metadata.outerIterations.toLocaleString();
+  $('stat-inner').textContent=data.metadata.innerIterations.toLocaleString();
+  $('iteration-label').textContent=`${data.metadata.rows} steps`;
+  const head=$('trace-head');head.replaceChildren();
+  ['#',macro.outer.name,macro.inner.name,'Result','Switch branch'].forEach(h=>head.appendChild(buildElement('th',h)));
+  const tbody=$('trace-body');tbody.replaceChildren();
+  for(let x=0;x<Math.min(currentRows.length,150);x++){
+    const row=currentRows[x],tr=document.createElement('tr');tr.dataset.index=x;
+    [row.index,row[macro.outer.name],row[macro.inner.name],row.result,row.branch].forEach(v=>tr.appendChild(buildElement('td',v)));
+    tr.addEventListener('click',()=>{currentTrace=x;showTrace()});tbody.appendChild(tr);
+  }
+  $('trace-limit').textContent=currentRows.length>150?'Showing the first 150 rows. The complete result is available through the API.':'';
+  showTrace();
+}
+async function runApplet({switchTab=false}={}){
+  if(running)return;
+  running=true;
+  $('run').disabled=true;
+  try{
+    const macro=getForm();
+    const [run,code]=await Promise.all([post('/api/run',macro),post('/api/code',macro)]);
+    renderResults(run,macro);generatedCode=code.source;$('code-output').textContent=generatedCode;
+    $('macro-output').value=JSON.stringify(macro,null,2);
+    setNotice(`Success: executed ${run.metadata.rows} iterations without compilation.`);
+    if(switchTab)showPanel('visualize');
+  }catch(err){setNotice(err.message,true)}finally{running=false;$('run').disabled=false;}
+}
+$('run').addEventListener('click',()=>runApplet({switchTab:true}));
+$('previous').addEventListener('click',()=>{currentTrace=Math.max(0,currentTrace-1);showTrace()});
+$('next').addEventListener('click',()=>{currentTrace=Math.min(currentRows.length-1,currentTrace+1);showTrace()});
+$('run-tests').addEventListener('click',async()=>{
+  const root=$('test-results');root.replaceChildren();
+  try{const results=await post('/api/test',getForm());for(const c of results.checks)root.appendChild(buildElement('div',`${c.passed?'✓':'✕'}  ${c.name}`,'test-item'));setNotice(`Test laboratory: ${results.checks.filter(x=>x.passed).length}/${results.checks.length} checks passed.`);}
+  catch(err){setNotice(err.message,true);root.appendChild(buildElement('div',err.message));}
+});
+$('apply-macro').addEventListener('click',async()=>{
+  try{const macro=JSON.parse($('macro-output').value);await post('/api/validate',macro);setForm(macro);setNotice('Applied macro JSON to the wizard. No recompilation needed.');showPanel('configure');}
+  catch(err){setNotice(err.message,true)}
+});
+$('download').addEventListener('click',()=>{
+  const json=JSON.stringify(getForm(),null,2)+'\n';
+  const link=document.createElement('a');link.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));link.download='audk-macro.json';link.click();URL.revokeObjectURL(link.href);
+});
+async function copy(text){try{await navigator.clipboard.writeText(text);setNotice('Copied to clipboard.')}catch{setNotice('Clipboard requires a secure browser context; select and copy manually.',true)}}
+$('copy-code').addEventListener('click',()=>copy(generatedCode));
 $('copy-macro').addEventListener('click',()=>copy($('macro-output').value));
-const library=['library/nested-loops.json','library/countdown-grid.json','scenarios/digital-crossdock-slot-matrix.json'];
-async function loadLibrary(){const list=$('library-list');list.replaceChildren();for(const path of library){try{const response=await fetch('./'+path);if(!response.ok)throw Error('Missing '+path);const item=await response.json();const btn=document.createElement('button');btn.type='button';btn.className='library-item';btn.append(el('strong',item.config.name),el('small',item.description));btn.addEventListener('click',()=>{setForm(item.config);run(false);tab('configure');msg('Loaded '+item.id+' (browser-only demonstration)');list.querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')});list.appendChild(btn)}catch(e){list.appendChild(el('small',e.message))}}}
-wizard.addEventListener('input',()=>{try{const m=form();$('macro-output').value=JSON.stringify(m,null,2);code=generateJavaScript(m);$('code-output').textContent=code;msg('Configuration changed. Run to update execution trace.')}catch(e){msg(e.message,true)}});
-loadLibrary();run(false);
+$('macro-output').value=JSON.stringify(getForm(),null,2);
+async function loadRegistry(){
+  try{
+    // Only known, reviewed manifests are available in the public demonstration.
+    const manifests=['library/nested-loops.json','library/countdown-grid.json','library/digital-crossdock-routing.json','library/inventory-reorder.json','scenarios/digital-crossdock-slot-matrix.json'];
+    registry=await Promise.all(manifests.map(async path=>{
+      const res=await fetch('./'+path); if(!res.ok)throw new Error('Could not load '+path);
+      return await res.json();
+    }));
+    const list=$('library-list');list.replaceChildren();
+    for(const entry of registry){
+      const b=document.createElement('button');b.type='button';b.className='library-item';
+      b.appendChild(buildElement('strong',entry.config.name));b.appendChild(buildElement('small',entry.description));
+      b.addEventListener('click',()=>{if(entry.kind==='pipeline'){window.dispatchEvent(new CustomEvent('audk:load-pipeline',{detail:entry.config}));showPanel('compose');}else{setForm(entry.config);showPanel('configure');}setNotice(`Loaded library applet: ${entry.id}`);for(const el of list.children)el.classList.remove('active');b.classList.add('active');});
+      list.appendChild(b);
+    }
+  }catch(err){setNotice(err.message,true)}
+}
+loadRegistry();
+runApplet();
+
+// Keep exported code and JSON synchronized as the wizard configuration changes.
+let previewTimer;
+let previewRevision = 0;
+wizard.addEventListener('input', () => {
+  const revision = ++previewRevision;
+  clearTimeout(previewTimer);
+  const macro = getForm();
+  $('macro-output').value = JSON.stringify(macro, null, 2);
+  previewTimer = setTimeout(async () => {
+    try {
+      const code = await post('/api/code', macro);
+      if (revision !== previewRevision) return;
+      generatedCode = code.source;
+      $('code-output').textContent = generatedCode;
+      setNotice('Configuration updated. Generated code and macro are current; run to refresh the trace.');
+    } catch (err) {
+      if (revision === previewRevision) setNotice(err.message, true);
+    }
+  }, 170);
+});
