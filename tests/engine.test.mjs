@@ -26,8 +26,8 @@ test('macros exceeding operation limit rejected',()=>{
  assert.throws(()=>executeMacro({...base(),outer:{name:'i',start:0,end:100,step:1},inner:{name:'j',start:0,end:100,step:1}}),/Too many/);
 });
 test('variable names cannot inject JavaScript',()=>{
- assert.throws(()=>generateJavaScript({...base(),outer:{name:'i); process.exit(1); //',start:0,end:2,step:1}}),/identifier/);
- assert.throws(()=>generateJavaScript({...base(),outer:{name:'class',start:0,end:2,step:1}}),/identifier/);
+ assert.throws(()=>generateJavaScript({...base(),outer:{name:'i); process.exit(1); //',start:0,end:2,step:1}}),/identifier|valid variable name/);
+ assert.throws(()=>generateJavaScript({...base(),outer:{name:'class',start:0,end:2,step:1}}),/identifier|valid variable name/);
 });
 test('generated JavaScript and interpreter agree on all supported modes',()=>{
  for(const operation of ['pair','sum','product','difference']){
