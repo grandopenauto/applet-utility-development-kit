@@ -1,0 +1,10 @@
+{
+  "schema": "audk.pipeline.v1",
+  "name": "Inventory reorder diagnostic",
+  "input": { "type": "list", "field": "quantity", "values": [2,4,6,8,10] },
+  "steps": [
+    { "id": "double-stock", "type": "map", "field": "quantity", "operation": "multiply", "value": 2, "outputField": "units" },
+    { "id": "minimum", "type": "filter", "field": "units", "operator": "gte", "value": 10 },
+    { "id": "total", "type": "aggregate", "operation": "sum", "field": "units", "outputField": "totalUnits" }
+  ]
+}

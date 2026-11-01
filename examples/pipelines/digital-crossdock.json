@@ -1,0 +1,11 @@
+{
+  "schema": "audk.pipeline.v1",
+  "name": "Digital CrossDock door-slot routing",
+  "input": { "type": "range", "field": "door", "start": 1, "end": 5, "step": 1 },
+  "steps": [
+    { "id": "time-slots", "type": "crossJoin", "field": "slot", "values": ["08:00", "09:00", "10:00", "11:00"] },
+    { "id": "priority-doors", "type": "filter", "field": "door", "operator": "gte", "value": 2 },
+    { "id": "door-lane", "type": "switch", "field": "door", "mode": "parity", "outputField": "lane" },
+    { "id": "sort-door", "type": "sort", "field": "door", "direction": "asc" }
+  ]
+}

@@ -15,16 +15,17 @@
       <div class="side-link">⎇ <span>Macro Runtime</span></div>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.1.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.2.0 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> Applet Studio <span>/</span> <strong>Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.1</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> Applet Studio <span>/</span> <strong>Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.2</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
         <div class="workspace-head"><div><h2>Nested Loop Wizard</h2><p>Configure the applet, then run it locally in your browser. No server access required.</p></div><div class="actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
         <nav class="tabs" aria-label="Applet workspace tabs">
           <button class="tab active" data-tab="configure">⚙ Configure</button>
           <button class="tab" data-tab="visualize">▦ Visualize</button>
+          <button class="tab" data-tab="compose">⛓ Applet Composer</button>
           <button class="tab" data-tab="code">⌘ View code</button>
           <button class="tab" data-tab="macro">{} Macro JSON</button>
           <button class="tab" data-tab="tests">✓ Test lab</button>
@@ -40,6 +41,27 @@
           </form>
         </section>
         <section id="panel-visualize" class="panel"><div class="panel-header"><div><h3>Execution visualization</h3><p>Review individual iterations without stepping through raw code.</p></div><span id="iteration-label" class="tag">No run yet</span></div><div class="stat-grid"><div class="stat"><span>Output rows</span><strong id="stat-rows">—</strong></div><div class="stat"><span>Outer iterations</span><strong id="stat-outer">—</strong></div><div class="stat"><span>Inner iterations</span><strong id="stat-inner">—</strong></div></div><div class="trace-controls"><button id="previous" class="btn secondary">← Previous</button><span id="trace-position">No iteration selected</span><button id="next" class="btn secondary">Next →</button></div><div id="selected-trace" class="trace-feature">Run the applet to inspect the execution trace.</div><div class="table-wrap"><table><thead><tr id="trace-head"><th>#</th><th>Outer</th><th>Inner</th><th>Result</th><th>Switch branch</th></tr></thead><tbody id="trace-body"></tbody></table></div><small id="trace-limit" class="muted"></small></section>
+
+        <section id="panel-compose" class="panel">
+          <div class="panel-header"><div><h3>Applet Composer <span class="tag">New · v0.2</span></h3><p>Connect reusable applets, inspect the result of every step, and run versioned JSON macros without compiling.</p></div><button id="flow-run" class="btn primary" type="button">▶ Run composed macro</button></div>
+          <div class="flow-toolbar"><label>Example scenario<select id="flow-example"><option value="crossdock">Digital CrossDock · Door/slot routing</option><option value="inventory">Inventory · Reorder calculation</option></select></label><div class="flow-toolbar-actions"><button id="flow-save" class="btn secondary" type="button">Save locally</button><button id="flow-load" class="btn secondary" type="button">Load saved</button><button id="flow-download" class="btn secondary" type="button">↓ Export JSON</button><label class="btn secondary flow-file">↑ Import JSON<input id="flow-import" type="file" accept=".json,application/json" hidden></label></div></div>
+          <div id="composer-status" class="notice" role="status" aria-live="polite">Ready to compose.</div>
+          <div class="flow-grid">
+            <div class="flow-editor">
+              <div class="flow-group"><div class="flow-group-title"><strong>01 · Input</strong><span>Choose the initial dataset</span></div><label>Macro name<input id="flow-name" maxlength="80" type="text"/></label><div class="input-grid two"><label>Source<select id="flow-source-type"><option value="range">Number range</option><option value="list">Value list</option></select></label><label>Field name<input id="flow-source-field" type="text"/></label></div><div id="flow-range-controls" class="input-grid three"><label>Start<input id="flow-range-start" type="number"/></label><label>End (exclusive)<input id="flow-range-end" type="number"/></label><label>Step<input id="flow-range-step" type="number"/></label></div><div id="flow-list-controls" hidden><label>List values (JSON array)<textarea id="flow-list-json" class="flow-mini-textarea" spellcheck="false"></textarea></label></div></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>02 · Applet chain</strong><span>Configure, reorder, and connect</span></div><div id="flow-steps"></div><div class="flow-add"><select id="flow-add-type" aria-label="Applet type to add"><option value="crossJoin">Cross join</option><option value="map">Map / transform</option><option value="filter">Filter</option><option value="switch">Switch / branch</option><option value="sort">Sort</option><option value="aggregate">Aggregate</option></select><button id="flow-add" class="btn secondary" type="button">+ Add applet</button></div></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>03 · Macro editor</strong><span>Apply your own JSON configuration</span></div><textarea id="flow-json" class="macrobox flow-macrobox" spellcheck="false" aria-label="Composed macro JSON"></textarea><button id="flow-apply-json" type="button" class="btn secondary">Apply macro JSON</button></div>
+            </div>
+            <div class="flow-output">
+              <div class="stat-grid flow-stats"><div class="stat"><span>Final rows</span><strong id="flow-result-count">—</strong></div><div class="stat"><span>Connected applets</span><strong id="flow-step-count">—</strong></div></div>
+              <div class="flow-view-tabs"><button type="button" class="active" data-flow-view="trace">Step inspector</button><button type="button" data-flow-view="code">View code</button><button type="button" data-flow-view="json">Macro JSON</button></div>
+              <div data-flow-output="trace" id="flow-output-trace"></div>
+              <div data-flow-output="code" hidden><button id="flow-copy-code" class="btn secondary flow-copy" type="button">Copy JavaScript</button><pre class="codebox" id="flow-output-code"></pre></div>
+              <pre data-flow-output="json" hidden class="codebox" id="flow-output-json"></pre>
+              <div class="flow-safety">Browser-local execution · Up to 5,000 rows · No external requests, shell access, or automatic publishing</div>
+            </div>
+          </div>
+        </section>
         <section id="panel-code" class="panel"><div class="panel-header"><div><h3>Generated JavaScript</h3><p>Readable, portable code. Edit or embed it in your project.</p></div><button id="copy-code" class="btn secondary">Copy code</button></div><pre id="code-output" class="codebox">Run the applet to generate code.</pre></section>
         <section id="panel-macro" class="panel"><div class="panel-header"><div><h3>Macro configuration</h3><p>A versionable JSON description interpreted directly by the runtime.</p></div><button id="copy-macro" class="btn secondary">Copy JSON</button></div><textarea id="macro-output" class="macrobox" spellcheck="false" aria-label="Macro JSON"></textarea><div class="editor-footer"><span>Change the JSON and apply it without recompiling software.</span><button id="apply-macro" class="btn secondary">Apply JSON to wizard</button></div></section>
         <section id="panel-tests" class="panel"><div class="panel-header"><div><h3>Built-in Test Laboratory</h3><p>Validate execution bounds, output count, and branch tracing.</p></div><button id="run-tests" class="btn primary">✓ Run checks</button></div><div id="test-results" class="test-results muted">No tests run yet.</div></section>
@@ -49,5 +71,6 @@
     </main>
   </div>
   <script type="module" src="./pages-app.js"></script>
+  <script type="module" src="./composer-ui.js"></script>
 </body>
 </html>
