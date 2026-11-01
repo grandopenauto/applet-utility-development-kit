@@ -1,0 +1,23 @@
+{
+  "id": "countdown-grid",
+  "kind": "macro",
+  "version": "0.1.0",
+  "description": "Descending loops, pairs, and execution trace",
+  "config": {
+    "name": "Descending loop grid",
+    "outer": {
+      "name": "row",
+      "start": 3,
+      "end": 0,
+      "step": -1
+    },
+    "inner": {
+      "name": "column",
+      "start": 4,
+      "end": 1,
+      "step": -1
+    },
+    "operation": "pair",
+    "branchBy": "none"
+  }
+}

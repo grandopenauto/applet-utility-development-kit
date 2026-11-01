@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>AUDK Studio — Applet Utility Development Kit</title>
+  <link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brandmark">A<span>✳</span></div><div><strong>AUDK Studio</strong><small>Applet Utility Development Kit</small></div></div>
+      <div class="side-label">WORKSPACE</div>
+      <div class="side-link selected">▦ <span>Applet Studio</span></div>
+      <div class="side-link">⎇ <span>Macro Runtime</span></div>
+      <div class="side-label">APPLET LIBRARY</div>
+      <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.1.0 · Safe declarative runtime</small></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> Applet Studio <span>/</span> <strong>Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.1</span></header>
+      <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
+      <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
+        <div class="workspace-head"><div><h2>Nested Loop Wizard</h2><p>Configure the applet, then run it locally in your browser. No server access required.</p></div><div class="actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
+        <nav class="tabs" aria-label="Applet workspace tabs">
+          <button class="tab active" data-tab="configure">⚙ Configure</button>
+          <button class="tab" data-tab="visualize">▦ Visualize</button>
+          <button class="tab" data-tab="code">⌘ View code</button>
+          <button class="tab" data-tab="macro">{} Macro JSON</button>
+          <button class="tab" data-tab="tests">✓ Test lab</button>
+          <button class="tab" data-tab="api">↗ API</button>
+        </nav>
+        <div id="notice" class="notice" role="status" aria-live="polite">Ready. Edit the configuration and choose Run applet.</div>
+        <section id="panel-configure" class="panel active">
+          <form id="wizard" autocomplete="off">
+            <div class="fieldset"><div class="step-icon">1</div><div class="fieldset-body"><h3>Name your applet</h3><label>Applet name<input name="macro-name" value="Nested-loop diagnostic" maxlength="80" required/></label></div></div>
+            <div class="fieldset"><div class="step-icon">2</div><div class="fieldset-body"><h3>Outer loop</h3><p>Runs once for each outer iteration, using an exclusive end bound.</p><div class="input-grid four"><label>Variable<input name="outer-name" value="i" required/></label><label>Start<input name="outer-start" type="number" step="1" value="1" required/></label><label>End (exclusive)<input name="outer-end" type="number" step="1" value="4" required/></label><label>Step<input name="outer-step" type="number" step="1" value="1" required/></label></div></div></div>
+            <div class="fieldset"><div class="step-icon">3</div><div class="fieldset-body"><h3>Inner loop</h3><p>Runs completely inside each outer iteration.</p><div class="input-grid four"><label>Variable<input name="inner-name" value="j" required/></label><label>Start<input name="inner-start" type="number" step="1" value="1" required/></label><label>End (exclusive)<input name="inner-end" type="number" step="1" value="5" required/></label><label>Step<input name="inner-step" type="number" step="1" value="1" required/></label></div></div></div>
+            <div class="fieldset"><div class="step-icon">4</div><div class="fieldset-body"><h3>Choose an operation and branch</h3><div class="input-grid two"><label>Value to calculate<select name="operation"><option value="product">Multiply variables</option><option value="sum">Add variables</option><option value="difference">Subtract inner from outer</option><option value="pair">Concatenate as pair</option></select></label><label>Switch logic<select name="branchBy"><option value="sumParity">Switch on (outer + inner) parity</option><option value="none">No branch — emit all results</option></select></label></div></div></div>
+          </form>
+        </section>
+        <section id="panel-visualize" class="panel"><div class="panel-header"><div><h3>Execution visualization</h3><p>Review individual iterations without stepping through raw code.</p></div><span id="iteration-label" class="tag">No run yet</span></div><div class="stat-grid"><div class="stat"><span>Output rows</span><strong id="stat-rows">—</strong></div><div class="stat"><span>Outer iterations</span><strong id="stat-outer">—</strong></div><div class="stat"><span>Inner iterations</span><strong id="stat-inner">—</strong></div></div><div class="trace-controls"><button id="previous" class="btn secondary">← Previous</button><span id="trace-position">No iteration selected</span><button id="next" class="btn secondary">Next →</button></div><div id="selected-trace" class="trace-feature">Run the applet to inspect the execution trace.</div><div class="table-wrap"><table><thead><tr id="trace-head"><th>#</th><th>Outer</th><th>Inner</th><th>Result</th><th>Switch branch</th></tr></thead><tbody id="trace-body"></tbody></table></div><small id="trace-limit" class="muted"></small></section>
+        <section id="panel-code" class="panel"><div class="panel-header"><div><h3>Generated JavaScript</h3><p>Readable, portable code. Edit or embed it in your project.</p></div><button id="copy-code" class="btn secondary">Copy code</button></div><pre id="code-output" class="codebox">Run the applet to generate code.</pre></section>
+        <section id="panel-macro" class="panel"><div class="panel-header"><div><h3>Macro configuration</h3><p>A versionable JSON description interpreted directly by the runtime.</p></div><button id="copy-macro" class="btn secondary">Copy JSON</button></div><textarea id="macro-output" class="macrobox" spellcheck="false" aria-label="Macro JSON"></textarea><div class="editor-footer"><span>Change the JSON and apply it without recompiling software.</span><button id="apply-macro" class="btn secondary">Apply JSON to wizard</button></div></section>
+        <section id="panel-tests" class="panel"><div class="panel-header"><div><h3>Built-in Test Laboratory</h3><p>Validate execution bounds, output count, and branch tracing.</p></div><button id="run-tests" class="btn primary">✓ Run checks</button></div><div id="test-results" class="test-results muted">No tests run yet.</div></section>
+        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
+      </section>
+      <footer>AUDK · Browser demo · Powered by reusable declarative applets · <a href="https://digitalcrossdock.com">Digital CrossDock</a></footer>
+    </main>
+  </div>
+  <script type="module" src="./pages-app.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "id": "digital-crossdock-slot-matrix",
+  "kind": "macro",
+  "version": "0.1.0",
+  "description": "Digital CrossDock illustration: enumerate dock doors and appointment slots. Not live scheduling or route optimization.",
+  "config": {
+    "name": "Digital CrossDock - door and slot matrix",
+    "outer": {
+      "name": "door",
+      "start": 1,
+      "end": 5,
+      "step": 1
+    },
+    "inner": {
+      "name": "slot",
+      "start": 1,
+      "end": 7,
+      "step": 1
+    },
+    "operation": "pair",
+    "branchBy": "sumParity"
+  }
+}

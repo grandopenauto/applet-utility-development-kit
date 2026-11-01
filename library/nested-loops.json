@@ -1,0 +1,23 @@
+{
+  "id": "nested-loops",
+  "kind": "macro",
+  "version": "0.1.0",
+  "description": "Two nested for-loops with parity-based switch debugging",
+  "config": {
+    "name": "Nested-loop diagnostic",
+    "outer": {
+      "name": "i",
+      "start": 1,
+      "end": 4,
+      "step": 1
+    },
+    "inner": {
+      "name": "j",
+      "start": 1,
+      "end": 5,
+      "step": 1
+    },
+    "operation": "product",
+    "branchBy": "sumParity"
+  }
+}
