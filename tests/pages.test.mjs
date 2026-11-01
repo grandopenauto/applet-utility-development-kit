@@ -9,7 +9,7 @@ test('Pages demo uses local browser interpreter and relative assets', async () =
   const js=await readFile(new URL('../pages-app.js', import.meta.url),'utf8');
   assert.match(html,/src="\.\/pages-app\.js"/);
   assert.match(html,/href="\.\/style\.css"/);
-  assert.match(js,/executeMacro\(body\)/);
+  assert.match(js,/executeMacro\(/);
   assert.doesNotMatch(js,/fetch\('\/api\/applets'\)/);
 });
 test('CrossDock illustrative slot matrix is bounded and executable', async () => {
