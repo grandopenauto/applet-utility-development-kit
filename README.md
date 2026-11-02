@@ -278,10 +278,12 @@ Cross-platform test harness fixes: generated Node test subprocesses explicitly u
 
 A separate Windows-only, explicit operator worker rejects elevated or unknown identities; validates SHA-256 pins of seven approved implementation files; requires separate source and job data roots; and refuses automatic publication. Use `npm run worker:lock` after reviewed changes and `node scripts/verify-worker-lock.mjs` in CI. See `docs/RESTRICTED_WINDOWS_WORKER.md`. No dedicated Windows identity, service or public endpoint is installed by this source release.
 
-### v1.4.1 CI portability correction
-
-Windows and Linux use portable temporary paths. Source text and JSON line endings are pinned to LF. The source lock now uses the SHA-256 of the repository's actual universal-wizard implementation. This patch does not deploy or activate any worker.
-
 ## AUDK v1.5 — Reproducible build evidence
 
-The private reviewed build worker now saves a separate `evidence.json` recording checksums and recipe fingerprints. Operators can run `npm run build:verify -- <absolute-job-root> <job-id>` to regenerate the expected output from trusted first-party recipes and detect altered artifacts, including rewritten stored hashes. See `docs/BUILD_EVIDENCE.md`. This is reproducibility evidence, not a signed attestation, and does not authorize public job execution or automatic publication.
+The private reviewed build worker generates `evidence.json` with artifact digests and source fingerprints. Operators can run `npm run build:verify -- <absolute-job-root> <job-id>` to regenerate expected files from trusted recipes and detect tampering even when stored artifact hashes have been changed. This is reproducibility checking, **not signed attestation**; see `docs/BUILD_EVIDENCE.md`. Public submission and automatic promotion remain disabled.
+
+## v1.6 — Disposable non-admin Windows execution proof
+
+The `restricted-worker-smoke` GitHub Actions job now exercises the existing restricted worker as a **real temporary standard Windows user** on a disposable GitHub-hosted Windows VM. It creates a temporary account and isolated source, jobs and protected-sentinel directories; tests denied source writes and protected-file reads alongside authorized job writes; pins the account SID; executes the reviewed `math.sqrt` build; independently regenerates and verifies all four output artifacts; then removes the account. No secrets or production VPS connections are involved. This is a CI identity/ACL exercise and **not** an untrusted-code sandbox or evidence of production VPS account provisioning. Only trusted first-party recipes may execute.
+
+See `docs/WINDOWS_RESTRICTED_CI.md`. No permanent service, Windows task, IIS endpoint or remote build gateway is created by this workflow.

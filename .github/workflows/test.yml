@@ -23,3 +23,21 @@ jobs:
       - run: npm run check
       - run: node scripts/verify-worker-lock.mjs
 # No publication or VPS deployment.
+
+  restricted-worker-smoke:
+    # Disposable GitHub-hosted runner only. No access to production VPS or secrets.
+    needs: test
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute reviewed build as disposable non-admin local Windows account
+        shell: pwsh
+        run: ./scripts/ci-restricted-worker-smoke.ps1
