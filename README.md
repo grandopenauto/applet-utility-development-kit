@@ -277,3 +277,7 @@ Cross-platform test harness fixes: generated Node test subprocesses explicitly u
 ## v1.4 — Restricted Worker Admission
 
 A separate Windows-only, explicit operator worker rejects elevated or unknown identities; validates SHA-256 pins of seven approved implementation files; requires separate source and job data roots; and refuses automatic publication. Use `npm run worker:lock` after reviewed changes and `node scripts/verify-worker-lock.mjs` in CI. See `docs/RESTRICTED_WINDOWS_WORKER.md`. No dedicated Windows identity, service or public endpoint is installed by this source release.
+
+### v1.4.1 CI portability correction
+
+Windows and Linux use portable temporary paths. Source text and JSON line endings are pinned to LF. The source lock now uses the SHA-256 of the repository's actual universal-wizard implementation. This patch does not deploy or activate any worker.

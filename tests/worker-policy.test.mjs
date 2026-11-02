@@ -25,10 +25,12 @@ test('whoami identity evidence parsing is conservative',()=>{
  assert.throws(()=>parseIdentityOutput('bad',group,priv),/Incomplete/);
 });
 test('worker roots must be distinct and cannot overlap',()=>{
- assert.deepEqual(requireWorkerLocation({source:'/tmp/audk-repo',storage:'/tmp/audk-private'}).source,'/tmp/audk-repo');
- assert.throws(()=>requireWorkerLocation({source:'/tmp/audk',storage:'/tmp/audk/jobs'}),/separate/);
- assert.throws(()=>requireWorkerLocation({source:'/tmp/audk/repo',storage:'/tmp/audk'}),/separate/);
- assert.throws(()=>requireWorkerLocation({source:'/tmp/audk',storage:'../not-absolute'}),/absolute/);
+ const repo=join(tmpdir(),'audk-worker-repo');
+ const data=join(tmpdir(),'audk-worker-data');
+ assert.equal(requireWorkerLocation({source:repo,storage:data}).source,repo);
+ assert.throws(()=>requireWorkerLocation({source:repo,storage:join(repo,'jobs')}),/separate/);
+ assert.throws(()=>requireWorkerLocation({source:join(repo,'src'),storage:repo}),/separate/);
+ assert.throws(()=>requireWorkerLocation({source:repo,storage:'not-absolute'}),/absolute/);
 });
 test('pinned worker sources check and tampered files fail closed',async()=>{
  const good=await verifySourceLock();assert.equal(good.verifiedFiles,7);
