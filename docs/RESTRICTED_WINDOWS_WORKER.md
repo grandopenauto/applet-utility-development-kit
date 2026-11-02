@@ -27,3 +27,11 @@ The earlier v1.3.1 proof (Queue rows 852–854) ran under privileged VPSBridge c
 ## Verification
 
 `npm test` checks deterministic identity denial, whoami parsing, root separation, source integrity tampering and policy classification. `node scripts/verify-worker-lock.mjs` validates source hashes. CI runs on Windows and Linux; actual restricted-principal Windows execution remains a separate, uncompleted gate.
+
+### v1.7 path and checkout integrity controls
+
+- Create the dedicated worker's job directory **before** running `worker:restricted --check`; the preflight now rejects a nonexistent directory and never provisions it automatically.
+- Source, job root, and every filesystem ancestor must be ordinary directories, with no symlink/junction indirection. Canonical paths must not overlap.
+- Pinned source modules and their parent directories must be regular files/directories, not symlinks or junctions. A matching SHA-256 alone is not enough to authorize an indirection.
+- The source tree must remain read-only to the dedicated Windows worker; unrelated protected files must be unreadable; the job root alone is writable. Keep CI checks, independent receipts, and deployment authorization.
+- This is defense in depth, **not** permission to run arbitrary supplied code or create a public API endpoint.

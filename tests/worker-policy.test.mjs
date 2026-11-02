@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
+import {mkdtemp,mkdir,readFile,writeFile,copyFile,symlink,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {assessIdentity,parseIdentityOutput,verifySourceLock,requireWorkerLocation,checkRestrictedWorker} from '../src/worker-policy.mjs';
+import {assessIdentity,parseIdentityOutput,verifySourceLock,requireWorkerLocation,verifyWorkerFilesystem,checkRestrictedWorker} from '../src/worker-policy.mjs';
 
 const allowedSid='S-1-5-21-123456-234567-345678-1001';
 const identity={accountSid:allowedSid,groupSids:['S-1-5-32-545'],privileges:[]};
@@ -48,10 +48,48 @@ test('pinned worker sources check and tampered files fail closed',async()=>{
  await assert.rejects(()=>verifySourceLock({home:root}),/integrity mismatch/);
 });
 test('restricted preflight provides only reviewed, unpublished policy',async()=>{
- const storage=join(tmpdir(),'audk-worker-example-data');
+ const storage=await mkdtemp(join(tmpdir(),'audk-worker-example-data-'));
  const p=await checkRestrictedWorker({allowedSid,storage,identity});
  assert.equal(p.restricted,true);assert.equal(p.sourceIntegrity,'pass');
  assert.equal(p.publication,'disabled');
  assert.equal(p.codePolicy,'reviewed-recipes-only');
+ assert.equal(p.pathConfinement,'canonical-disjoint');
  await assert.rejects(()=>checkRestrictedWorker({allowedSid,storage,identity:{...identity,groupSids:['S-1-5-32-544']}}),/Privileged/);
+});
+
+test('worker preflight rejects missing job directory rather than creating it',async()=>{
+ const parent=await mkdtemp(join(tmpdir(),'audk-missing-root-'));
+ try{
+  await assert.rejects(()=>verifyWorkerFilesystem({storage:join(parent,'missing')}),/ENOENT/);
+ }finally{await rm(parent,{recursive:true,force:true})}
+});
+test('worker refuses source and storage aliases through symlinks or junctions',async(t)=>{
+ const parent=await mkdtemp(join(tmpdir(),'audk-reparse-'));
+ const src=join(parent,'src'),data=join(parent,'data'),link=join(parent,'alias');
+ await mkdir(src);await mkdir(data);
+ try{
+  const clean=await verifyWorkerFilesystem({source:src,storage:data});
+  assert.equal(clean.pathConfinement,'canonical-disjoint');
+  try{await symlink(src,link,process.platform==='win32'?'junction':'dir')}
+  catch(e){if(['EPERM','EACCES','ENOSYS'].includes(e.code)){t.diagnostic('Symlink creation unavailable');return}throw e}
+  await assert.rejects(()=>verifyWorkerFilesystem({source:src,storage:link}),/symlink|junction/);
+ }finally{await rm(parent,{recursive:true,force:true})}
+});
+test('worker lock refuses a symlinked pinned source file despite matching bytes',async(t)=>{
+ const root=await mkdtemp(join(tmpdir(),'audk-lock-reparse-'));
+ const orig=JSON.parse(await readFile(new URL('../policy/worker-source-lock.json',import.meta.url),'utf8'));
+ try{
+  for(const f of orig.files){
+   const target=join(root,...f.path.split('/'));
+   await mkdir(join(target,'..'),{recursive:true});
+   await copyFile(new URL('../'+f.path,import.meta.url),target);
+  }
+  await mkdir(join(root,'policy'),{recursive:true});
+  await writeFile(join(root,'policy','worker-source-lock.json'),JSON.stringify(orig));
+  const target=join(root,'src','curated.mjs');const aliased=join(root,'curated-original.mjs');
+  await copyFile(target,aliased);await rm(target);
+  try{await symlink(aliased,target,'file')}
+  catch(e){if(['EPERM','EACCES','ENOSYS'].includes(e.code)){t.diagnostic('Symlink creation unavailable');return}throw e}
+  await assert.rejects(()=>verifySourceLock({home:root}),/regular file/);
+ }finally{await rm(root,{recursive:true,force:true})}
 });

@@ -1,7 +1,7 @@
 /** AUDK v1.4: restricted-worker admission. Defense in depth, NOT a sandbox. */
 import {execFileSync} from 'node:child_process';
-import {readFile} from 'node:fs/promises';
-import {join,resolve,isAbsolute} from 'node:path';
+import {readFile,lstat,realpath} from 'node:fs/promises';
+import {join,resolve,isAbsolute,dirname,parse,relative} from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 
@@ -36,17 +36,54 @@ export function probeWindowsIdentity({exec=execFileSync}={}){
  return parseIdentityOutput(command(['/user','/fo','csv','/nh']),command(['/groups','/fo','csv','/nh']),command(['/priv','/fo','csv','/nh']));
 }
 
+/** Reject symlink/junction indirection in the source, job root, and their ancestors.
+ * This is filesystem-confusion defense in depth, NOT an operating-system sandbox.
+ */
+async function canonicalDirectory(path){
+ const input=resolve(path),root=parse(input).root;
+ let current=input;
+ while(true){
+  const info=await lstat(current);
+  if(info.isSymbolicLink())throw Error('Worker source/data paths cannot use symlinks or junctions');
+  if(current===input&&!info.isDirectory())throw Error('Worker path must be a directory');
+  if(current===root)break;
+  const parent=dirname(current);
+  if(parent===current)break;
+  current=parent;
+ }
+ return await realpath(input);
+}
+
+export async function verifyWorkerFilesystem({source=HOME,storage}={}){
+ requireWorkerLocation({source,storage});
+ const s=await canonicalDirectory(source),d=await canonicalDirectory(storage);
+ const rel=relative(s,d),reverse=relative(d,s);
+ if(!rel||!reverse||(!rel.startsWith('..')&&!isAbsolute(rel))||(!reverse.startsWith('..')&&!isAbsolute(reverse)))
+  throw Error('Worker canonical source and job roots must be separate');
+ return {pathConfinement:'canonical-disjoint',reparsePoints:'denied'};
+}
+
 export async function verifySourceLock({home=HOME,manifest='policy/worker-source-lock.json'}={}){
  const root=resolve(home);
  const lockPath=resolve(root,manifest);
  if(!lockPath.startsWith(root+'\\')&&!lockPath.startsWith(root+'/'))throw Error('Source lock must be inside checkout');
+ if((await lstat(lockPath)).isSymbolicLink())throw Error('Worker source-lock manifest cannot be a symlink');
  const lock=JSON.parse(await readFile(lockPath,'utf8'));
  if(lock.schema!=='audk.worker-source-lock.v1'||!Array.isArray(lock.files)||lock.files.length<6||lock.files.length>25)throw Error('Worker source lock schema invalid');
  const names=new Set();
  for(const record of lock.files){
   if(typeof record.path!=='string'||!(/^(src|catalog|scripts)\/[a-zA-Z0-9_./-]+$/).test(record.path)||record.path.includes('..')||names.has(record.path)||!(/^[a-f0-9]{64}$/).test(record.sha256))throw Error('Worker source lock record rejected');
   names.add(record.path);
-  const bytes=await readFile(join(root,...record.path.split('/')));
+  const abs=join(root,...record.path.split('/'));
+  const directory=dirname(abs);
+  let current=directory;
+  while(current!==root){
+   if((await lstat(current)).isSymbolicLink())throw Error('Pinned source directory cannot be a junction');
+   const parent=dirname(current);if(parent===current)throw Error('Pinned source path escaped checkout');current=parent;
+  }
+  const info=await lstat(abs);
+  if(!info.isFile()||info.isSymbolicLink())throw Error('Pinned source must be a regular file');
+  const bytes=await readFile(abs);
   if(sha(bytes)!==record.sha256)throw Error('Worker source integrity mismatch: '+record.path);
  }
  for(const path of ['src/build-service.mjs','src/build-evidence.mjs','src/universal-wizard.mjs','src/curated.mjs','src/assembly-line.mjs','catalog/assembly-plan.json']){
@@ -64,7 +101,8 @@ export function requireWorkerLocation({source=HOME,storage}){
 
 export async function checkRestrictedWorker({allowedSid,storage,identity,home=HOME}={}){
  requireWorkerLocation({source:home,storage});
+ const filesystem=await verifyWorkerFilesystem({source:home,storage});
  const verified=await verifySourceLock({home});
  const evaluated=assessIdentity({...identity,allowedSid});
- return {...verified,...evaluated,publication:'disabled',codePolicy:'reviewed-recipes-only'};
+ return {...filesystem,...verified,...evaluated,publication:'disabled',codePolicy:'reviewed-recipes-only'};
 }
