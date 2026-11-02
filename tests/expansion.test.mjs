@@ -8,9 +8,10 @@ test('v1.0 candidate queue is deterministic and excludes implemented reviewed re
  const fresh=buildExpansionQueue(catalog);
  assert.deepEqual(fresh,queue);
  assert.equal(queue.summary.discovered,354);
- assert.equal(queue.summary.alreadySupported,14);
+ assert.equal(queue.summary.alreadySupported,24);
  assert.equal(queue.candidates.some(x=>x.id==='math.sqrt'),false);
- assert.ok(queue.candidates.some(x=>x.id==='math.cos'));
+ assert.equal(queue.candidates.some(x=>x.id==='math.cos'),false);
+ assert.ok(queue.candidates.some(x=>x.id==='math.tan'));
  assert.equal(validateExpansionQueue(queue),true);
 });
 test('v1.0 review candidates cannot enable runtime or auto publish',()=>{
@@ -21,7 +22,7 @@ test('v1.0 review candidates cannot enable runtime or auto publish',()=>{
 test('v1.0 risky builtins and callable classes require special review',()=>{
  const evalEntry={module:'builtins',name:'eval',signature:'(source, /)',kind:'function'};
  assert.equal(rateCandidate(evalEntry).priority,0);
- assert.equal(rateCandidate({module:'math',name:'cos',signature:'(x, /)',kind:'function'}).state,'review-candidate');
+ assert.equal(rateCandidate({module:'math',name:'tan',signature:'(x, /)',kind:'function'}).state,'review-candidate');
  assert.equal(rateCandidate({module:'json',name:'JSONEncoder',signature:'(a)',kind:'callable'}).state,'requires-special-review');
  assert.throws(()=>rateCandidate({module:'subprocess',name:'run',signature:'(x)'}),/unallowlisted/);
 });
@@ -32,9 +33,9 @@ test('v1.0 suggested fields are only advisory identifiers',()=>{
  assert.deepEqual(proposeFields('(signature unavailable)'),[]);
 });
 test('v1.0 local API has bounded metadata-only candidate access',async()=>{
- const r=await apiResponse('GET','/api/expansion/queue',null,{search:'math.cos',limit:'3'});
+ const r=await apiResponse('GET','/api/expansion/queue',null,{search:'math.tan',limit:'3'});
  assert.equal(r.status,200);assert.equal(r.data.readOnly,true);assert.ok(r.data.totalMatching>0);
- assert.equal(r.data.candidates[0].id,'math.cos');
+ assert.equal(r.data.candidates[0].id,'math.tan');
  await assert.rejects(()=>apiResponse('GET','/api/expansion/queue',null,{limit:'10000'}),/Limit must/);
 });
 test('v1.0 weekly scanning does not grant write permissions or publish automatically',async()=>{

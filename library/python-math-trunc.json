@@ -1,0 +1,23 @@
+{
+  "id": "python-math-trunc",
+  "kind": "curated-function",
+  "version": "1.1.0",
+  "name": "Truncate to integer utility",
+  "description": "Discard the fractional part of a finite number, rounding toward zero",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-trunc",
+    "name": "Truncate to integer utility",
+    "description": "Discard the fractional part of a finite number, rounding toward zero",
+    "functionId": "math.trunc",
+    "arguments": {
+      "value": -3.75
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

@@ -1,3 +1,15 @@
+# AUDK v1.1 — Build Reusable Software Components
+
+**Build once. Configure, test, and reuse anywhere.** AUDK is the Applet Utility Development Kit, providing bounded, reusable software components, visual configuration, tested JavaScript/Python export and no-compile JSON macros.
+
+- **Current inventory (v1.1):** 22 validated published applets, including 18 pinned first-party Python-compatible utilities and four original macros/pipelines. The Universal Wizard exposes 24 allowlisted, bounded functions. The Python discovery snapshot remains 354 callables, of which 24 have reviewed wizards, 157 are development-review candidates and 173 need special review.
+- **This release adds ten utilities:** `math.trunc`, `math.fabs`, `math.degrees`, `math.radians`, `math.log10`, `math.log2`, `math.lcm`, `math.prod`, `math.sin`, and `math.cos`. Their JavaScript previews, exports and generated Python scripts are tested. Floating-point outputs may differ slightly by platform, so cross-language checks use bounded numerical tolerances.
+- **Security:** These are first-party, deterministic, pure computation applets with validated input bounds. Python discovery records and weekly GitHub Actions scans remain non-executable, read-only review evidence. New third-party code still requires manual review and a GitHub pull request.
+- **Static deployment:** `https://audk.digitalcrossdock.com` on GitHub Pages. Express/Node APIs are local-only, and neither VPS services nor DNS records are modified.
+- **Verification:** Run `npm test`, `npm run check`, and `npm run expansion:scan` locally to reproduce registry and review-queue status. Older README sections below describe historical release milestones; counts there refer to their respective versions.
+
+---
+
 # AUDK v1.0 — Automated Applet Expansion Queue
 
 - **Expansion Queue:** Search and inspect metadata-only candidates ranked from the 354-function pinned Python discovery snapshot. The snapshot currently has 167 development review candidates, 173 needing special review, and 14 functions already supported by reviewed wizards. These are planning heuristics, not executable additions. The permanent library remains **12 validated applets**.

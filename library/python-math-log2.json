@@ -1,0 +1,23 @@
+{
+  "id": "python-math-log2",
+  "kind": "curated-function",
+  "version": "1.1.0",
+  "name": "Base-two logarithm utility",
+  "description": "Calculate the base-two logarithm of a strictly positive number",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-log2",
+    "name": "Base-two logarithm utility",
+    "description": "Calculate the base-two logarithm of a strictly positive number",
+    "functionId": "math.log2",
+    "arguments": {
+      "value": 256
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

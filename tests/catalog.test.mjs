@@ -8,12 +8,12 @@ import {apiResponse} from '../src/api.mjs';
 const entries=await loadRegistry();
 const discovery=JSON.parse(await readFile(new URL('../catalog/python-standard-library.json',import.meta.url)));
 test('v0.9 catalog enumerates only published manifests and categories',()=>{
- assert.equal(entries.length,12);
- assert.equal(filterCatalog(entries).length,12);
+ assert.equal(entries.length,22);
+ assert.equal(filterCatalog(entries).length,22);
  assert.ok(CATEGORIES.includes(classifyApplet(entries.find(x=>x.id==='python-math-sqrt'))));
- assert.equal(filterCatalog(entries,{category:'Mathematics'}).length,3);
+ assert.equal(filterCatalog(entries,{category:'Mathematics'}).length,12);
  assert.deepEqual(filterCatalog(entries,{search:'fACTOriAL'}).map(r=>r.id),['python-math-factorial']);
- assert.equal(filterCatalog(entries,{kind:'curated-function'}).length,8);
+ assert.equal(filterCatalog(entries,{kind:'curated-function'}).length,18);
  assert.equal(filterCatalog(entries,{kind:'pipeline'}).length,2);
  assert.throws(()=>filterCatalog(entries,{category:'Admin'}),/Unknown category/);
 });
@@ -27,12 +27,12 @@ test('catalog detail examples execute only reviewed bounded functions or existin
 });
 test('Python discovery exports metadata-only intake and does not confuse discovery with execution',()=>{
  const sqrt=discovery.entries.find(x=>x.module==='math'&&x.name==='sqrt');
- const cos=discovery.entries.find(x=>x.module==='math'&&x.name==='cos');
+ const tan=discovery.entries.find(x=>x.module==='math'&&x.name==='tan');
  assert.equal(classifyDiscovered(sqrt).state,'wizard-supported');
- assert.equal(classifyDiscovered(cos).state,'discovery-only');
+ assert.equal(classifyDiscovered(tan).state,'discovery-only');
  assert.throws(()=>makePythonIntake(sqrt),/already has a reviewed/);
- const packet=makePythonIntake(cos);
- assert.equal(packet.qualifiedName,'math.cos');
+ const packet=makePythonIntake(tan);
+ assert.equal(packet.qualifiedName,'math.tan');
  assert.equal(packet.runtimeEnabled,false);assert.equal(packet.autoPublish,false);
  assert.equal(validatePythonIntake(packet),true);
  assert.throws(()=>validatePythonIntake({...packet,runtimeEnabled:true}),/safety state/);

@@ -11,7 +11,7 @@ import {SECTIONS,sectionFromHash} from '../navigation-ui.js';
 const create=(recipe,args=recipe.examples[0].args)=>({schema:UNIVERSAL_SCHEMA,functionId:recipe.id,id:'review-candidate',name:'Reviewed candidate',description:'Validated pure function candidate',arguments:args});
 
 test('all reviewed recipes have schema-defined fields, examples and candidate-only status',()=>{
- assert.equal(UNIVERSAL_RECIPES.length,14);
+ assert.equal(UNIVERSAL_RECIPES.length,24);
  for(const recipe of UNIVERSAL_RECIPES){
   assert.ok(recipe.fields.length>0&&recipe.examples.length>0);
   for(const example of recipe.examples){
@@ -51,7 +51,10 @@ test('generated Python matches local preview for every curated recipe',()=>{
    const run=spawnSync('python3',['-c',py],{encoding:'utf8',timeout:7000,maxBuffer:50000});
    if(run.error?.code==='ENOENT')return;
    assert.equal(run.status,0,`${r.id}: ${run.stderr}`);
-   assert.deepEqual(JSON.parse(run.stdout),executeUniversal(c),r.id);
+   const actual=JSON.parse(run.stdout),expected=executeUniversal(c);
+   if(typeof actual==='number'&&typeof expected==='number'){
+     assert.ok(Math.abs(actual-expected)<=1e-12*Math.max(1,Math.abs(expected)),`${r.id}: Python ${actual} differs from JavaScript ${expected}`);
+   }else{assert.deepEqual(actual,expected,r.id);}
   }
  }
 });
@@ -70,7 +73,7 @@ test('rejects unchecked callables, extra parameter keys, unsafe values, and over
 
 test('local REST API returns safe recipes and preview, and navigation includes wizard',async()=>{
  const list=await apiResponse('GET','/api/universal/functions');
- assert.equal(list.status,200);assert.equal(list.data.recipes.length,14);
+ assert.equal(list.status,200);assert.equal(list.data.recipes.length,24);
  const preview=await apiResponse('POST','/api/universal/preview',create(UNIVERSAL_RECIPES[0]));
  assert.equal(preview.data.result,12);assert.equal(preview.data.manifest.status,'candidate-review-required');
  assert.ok(Object.hasOwn(SECTIONS,'universal'));
@@ -80,4 +83,15 @@ test('local REST API returns safe recipes and preview, and navigation includes w
  assert.match(html,/data-tab="universal"/);assert.match(html,/id="universal-form"/);
  assert.match(html,/src="\.\/universal-ui\.js"/);
  assert.match(server,/universal-wizard\.mjs/);
+});
+
+test('v1.1 mathematical functions enforce bounds and retain parity on representative edge cases',()=>{
+ const build=(id,arguments_)=>create(UNIVERSAL_RECIPES.find(r=>r.id===id),arguments_);
+ assert.equal(executeUniversal(build('math.lcm',{a:0,b:42})),0);
+ assert.equal(executeUniversal(build('math.lcm',{a:999983,b:1000000})),999983000000);
+ assert.equal(executeUniversal(build('math.prod',{numbers:[-2,-4,0.5]})),4);
+ assert.equal(executeUniversal(build('math.trunc',{value:-3.99})),-3);
+ for(const id of ['math.log10','math.log2']) assert.throws(()=>executeUniversal(build(id,{value:0})),/between/);
+ assert.throws(()=>executeUniversal(build('math.prod',{numbers:[101]})),/bounded finite/);
+ assert.throws(()=>executeUniversal(build('math.prod',{numbers:[1,2,3,4,5,6]})),/1–5/);
 });

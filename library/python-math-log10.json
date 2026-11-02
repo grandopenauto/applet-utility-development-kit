@@ -1,0 +1,23 @@
+{
+  "id": "python-math-log10",
+  "kind": "curated-function",
+  "version": "1.1.0",
+  "name": "Base-ten logarithm utility",
+  "description": "Calculate the base-ten logarithm of a strictly positive number",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-log10",
+    "name": "Base-ten logarithm utility",
+    "description": "Calculate the base-ten logarithm of a strictly positive number",
+    "functionId": "math.log10",
+    "arguments": {
+      "value": 1000
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

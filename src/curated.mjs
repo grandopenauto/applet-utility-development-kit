@@ -6,7 +6,8 @@ import {UNIVERSAL_RECIPES,UNIVERSAL_SCHEMA,validateUniversalConfig,executeUniver
 export const CURATED_SCHEMA='audk.curated.v1';
 export const CURATED_FUNCTIONS=Object.freeze([
  'math.sqrt','math.factorial','math.gcd','statistics.mean',
- 'statistics.median','builtins.sum','builtins.sorted','builtins.len'
+ 'statistics.median','builtins.sum','builtins.sorted','builtins.len',
+ 'math.trunc','math.fabs','math.degrees','math.radians','math.log10','math.log2','math.lcm','math.prod','math.sin','math.cos'
 ]);
 export function buildCuratedEntry(functionId){
  if(!CURATED_FUNCTIONS.includes(functionId))throw Error('Function is not a pinned first-party preset');
@@ -16,7 +17,7 @@ export function buildCuratedEntry(functionId){
  const config=validateUniversalConfig({schema:UNIVERSAL_SCHEMA,id,
   name:recipe.title+' utility',description:recipe.description,
   functionId,arguments:recipe.examples[0].args});
- return {id,kind:'curated-function',version:'0.8.0',name:config.name,
+ return {id,kind:'curated-function',version:CURATED_FUNCTIONS.indexOf(functionId)<8?'0.8.0':'1.1.0',name:config.name,
   description:recipe.description,config,
   verification:{schema:CURATED_SCHEMA,status:'automated-cross-language-tests',
    provenance:'AUDK first-party reviewed recipe',

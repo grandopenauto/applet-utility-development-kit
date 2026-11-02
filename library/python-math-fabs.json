@@ -1,0 +1,23 @@
+{
+  "id": "python-math-fabs",
+  "kind": "curated-function",
+  "version": "1.1.0",
+  "name": "Floating absolute value utility",
+  "description": "Return the nonnegative magnitude of a floating-point number",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-fabs",
+    "name": "Floating absolute value utility",
+    "description": "Return the nonnegative magnitude of a floating-point number",
+    "functionId": "math.fabs",
+    "arguments": {
+      "value": -8.5
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

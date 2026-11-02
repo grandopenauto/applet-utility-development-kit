@@ -1,0 +1,23 @@
+{
+  "id": "python-math-degrees",
+  "kind": "curated-function",
+  "version": "1.1.0",
+  "name": "Radians to degrees utility",
+  "description": "Convert radians into degrees",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-degrees",
+    "name": "Radians to degrees utility",
+    "description": "Convert radians into degrees",
+    "functionId": "math.degrees",
+    "arguments": {
+      "value": 1
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

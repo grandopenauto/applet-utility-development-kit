@@ -1,0 +1,27 @@
+{
+  "id": "python-math-prod",
+  "kind": "curated-function",
+  "version": "1.1.0",
+  "name": "Product of numbers utility",
+  "description": "Multiply a small bounded sequence of numeric values",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-prod",
+    "name": "Product of numbers utility",
+    "description": "Multiply a small bounded sequence of numeric values",
+    "functionId": "math.prod",
+    "arguments": {
+      "numbers": [
+        2,
+        3,
+        4
+      ]
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

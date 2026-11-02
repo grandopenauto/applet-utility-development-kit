@@ -19,6 +19,16 @@ export const UNIVERSAL_RECIPES=Object.freeze([
  {id:'builtins.abs',title:'Absolute value',category:'Mathematics',description:'Magnitude of a finite numeric input',fields:[number('value','Input number',-18,-1e9,1e9)],examples:[{label:'Absolute value of -18',args:{value:-18}},{label:'Absolute value of 5.5',args:{value:5.5}}]},
  {id:'builtins.min',title:'Minimum value',category:'Collections',description:'Find the smallest numeric value in a nonempty list',fields:[numbers([5,-2,8,1])],examples:[{label:'Mixed numeric list',args:{numbers:[5,-2,8,1]}}]},
  {id:'builtins.max',title:'Maximum value',category:'Collections',description:'Find the largest numeric value in a nonempty list',fields:[numbers([5,-2,8,1])],examples:[{label:'Mixed numeric list',args:{numbers:[5,-2,8,1]}}]}
+, {"id":"math.trunc","title":"Truncate to integer","category":"Mathematics","description":"Discard the fractional part of a finite number, rounding toward zero","fields":[{"name":"value","label":"Input number","type":"number","default":-3.75,"min":-1000000000,"max":1000000000}],"examples":[{"label":"Negative decimal","args":{"value":-3.75}},{"label":"Positive decimal","args":{"value":9.9}}]}
+, {"id":"math.fabs","title":"Floating absolute value","category":"Mathematics","description":"Return the nonnegative magnitude of a floating-point number","fields":[{"name":"value","label":"Input number","type":"number","default":-8.5,"min":-1000000000,"max":1000000000}],"examples":[{"label":"Negative float","args":{"value":-8.5}},{"label":"Positive float","args":{"value":4.5}}]}
+, {"id":"math.degrees","title":"Radians to degrees","category":"Mathematics","description":"Convert radians into degrees","fields":[{"name":"value","label":"Radians","type":"number","default":1,"min":-1000,"max":1000}],"examples":[{"label":"One radian","args":{"value":1}},{"label":"Zero radians","args":{"value":0}}]}
+, {"id":"math.radians","title":"Degrees to radians","category":"Mathematics","description":"Convert degrees into radians","fields":[{"name":"value","label":"Degrees","type":"number","default":180,"min":-3600,"max":3600}],"examples":[{"label":"Half turn","args":{"value":180}},{"label":"Quarter turn","args":{"value":90}}]}
+, {"id":"math.log10","title":"Base-ten logarithm","category":"Mathematics","description":"Calculate the base-ten logarithm of a strictly positive number","fields":[{"name":"value","label":"Positive number","type":"number","default":1000,"min":0.000001,"max":1000000000000}],"examples":[{"label":"Log of one thousand","args":{"value":1000}},{"label":"Log of one hundredth","args":{"value":0.01}}]}
+, {"id":"math.log2","title":"Base-two logarithm","category":"Mathematics","description":"Calculate the base-two logarithm of a strictly positive number","fields":[{"name":"value","label":"Positive number","type":"number","default":256,"min":0.000001,"max":1000000000000}],"examples":[{"label":"Log of 256","args":{"value":256}},{"label":"Log of one eighth","args":{"value":0.125}}]}
+, {"id":"math.lcm","title":"Least common multiple","category":"Mathematics","description":"Find the least common multiple of two nonnegative bounded integers","fields":[{"name":"a","label":"First integer","type":"integer","default":12,"min":0,"max":1000000},{"name":"b","label":"Second integer","type":"integer","default":18,"min":0,"max":1000000}],"examples":[{"label":"12 and 18","args":{"a":12,"b":18}},{"label":"Zero and five","args":{"a":0,"b":5}}]}
+, {"id":"math.prod","title":"Product of numbers","category":"Collections","description":"Multiply a small bounded sequence of numeric values","fields":[{"name":"numbers","label":"Numbers (JSON array)","type":"numberArray","default":[2,3,4],"minItems":1,"maxItems":5,"min":-100,"max":100}],"examples":[{"label":"2 × 3 × 4","args":{"numbers":[2,3,4]}},{"label":"Sign handling","args":{"numbers":[-2,3,4]}}]}
+, {"id":"math.sin","title":"Sine","category":"Mathematics","description":"Calculate sine of an angle expressed in radians","fields":[{"name":"value","label":"Angle in radians","type":"number","default":0.5,"min":-1000,"max":1000}],"examples":[{"label":"Half radian","args":{"value":0.5}},{"label":"Zero radians","args":{"value":0}}]}
+, {"id":"math.cos","title":"Cosine","category":"Mathematics","description":"Calculate cosine of an angle expressed in radians","fields":[{"name":"value","label":"Angle in radians","type":"number","default":0.5,"min":-1000,"max":1000}],"examples":[{"label":"Half radian","args":{"value":0.5}},{"label":"Zero radians","args":{"value":0}}]}
 ]);
 const getRecipe=id=>UNIVERSAL_RECIPES.find(r=>r.id===id);
 const validId=id=>typeof id==='string'&&/^[a-z][a-z0-9-]{2,49}$/.test(id);
@@ -67,6 +77,16 @@ export function executeUniversal(config){
   case 'builtins.abs':return Math.abs(a.value);
   case 'builtins.min':return Math.min(...a.numbers);
   case 'builtins.max':return Math.max(...a.numbers);
+  case 'math.trunc':return Math.trunc(a.value);
+  case 'math.fabs':return Math.abs(a.value);
+  case 'math.degrees':return a.value*180/Math.PI;
+  case 'math.radians':return a.value*Math.PI/180;
+  case 'math.log10':return Math.log10(a.value);
+  case 'math.log2':return Math.log2(a.value);
+  case 'math.lcm':return a.a===0||a.b===0?0:(a.a/gcd(a.a,a.b))*a.b;
+  case 'math.prod':return a.numbers.reduce((acc,v)=>acc*v,1);
+  case 'math.sin':return Math.sin(a.value);
+  case 'math.cos':return Math.cos(a.value);
   default:throw Error('Unsupported reviewed function');
  }
 }
@@ -84,7 +104,17 @@ const JS_BODIES={
  'math.ceil':'return Math.ceil(args.value);',
  'builtins.abs':'return Math.abs(args.value);',
  'builtins.min':'return Math.min(...args.numbers);',
- 'builtins.max':'return Math.max(...args.numbers);'
+ 'builtins.max':'return Math.max(...args.numbers);',
+ 'math.trunc':"return Math.trunc(args.value);",
+ 'math.fabs':"return Math.abs(args.value);",
+ 'math.degrees':"return args.value*180/Math.PI;",
+ 'math.radians':"return args.value*Math.PI/180;",
+ 'math.log10':"return Math.log10(args.value);",
+ 'math.log2':"return Math.log2(args.value);",
+ 'math.lcm':"const gcd=(x,y)=>{while(y){[x,y]=[y,x%y]}return x};return args.a===0||args.b===0?0:(args.a/gcd(args.a,args.b))*args.b;",
+ 'math.prod':"return args.numbers.reduce((s,v)=>s*v,1);",
+ 'math.sin':"return Math.sin(args.value);",
+ 'math.cos':"return Math.cos(args.value);"
 };
 const PY_BODIES={
  'math.sqrt':'return math.sqrt(args["value"])',
@@ -100,15 +130,25 @@ const PY_BODIES={
  'math.ceil':'return math.ceil(args["value"])',
  'builtins.abs':'return abs(args["value"])',
  'builtins.min':'return min(args["numbers"])',
- 'builtins.max':'return max(args["numbers"])'
+ 'builtins.max':'return max(args["numbers"])',
+ 'math.trunc':"return math.trunc(args[\"value\"])",
+ 'math.fabs':"return math.fabs(args[\"value\"])",
+ 'math.degrees':"return math.degrees(args[\"value\"])",
+ 'math.radians':"return math.radians(args[\"value\"])",
+ 'math.log10':"return math.log10(args[\"value\"])",
+ 'math.log2':"return math.log2(args[\"value\"])",
+ 'math.lcm':"return math.lcm(args[\"a\"], args[\"b\"])",
+ 'math.prod':"return math.prod(args[\"numbers\"])",
+ 'math.sin':"return math.sin(args[\"value\"])",
+ 'math.cos':"return math.cos(args[\"value\"])"
 };
 export function generateUniversalJavaScript(config){
  const c=validateUniversalConfig(config);
- return `// AUDK v0.8 — Reviewed function: ${c.functionId}\n// Candidate for code review, not an automatically installed applet.\nexport function runApplet(){\n  const args=${JSON.stringify(c.arguments,null,2)};\n  ${JS_BODIES[c.functionId]}\n}\n`;
+ return `// AUDK v1.1 — Reviewed function: ${c.functionId}\n// Candidate for code review, not an automatically installed applet.\nexport function runApplet(){\n  const args=${JSON.stringify(c.arguments,null,2)};\n  ${JS_BODIES[c.functionId]}\n}\n`;
 }
 export function generateUniversalPython(config){
  const c=validateUniversalConfig(config);
- return `# AUDK v0.8 — Reviewed function: ${c.functionId}\n# Local Python 3.10+. No dynamic imports, eval, shell or network calls.\nimport json\nimport math\nimport statistics\n\n_CONFIG=json.loads(${JSON.stringify(JSON.stringify(c.arguments))})\n\ndef run_applet():\n    args = _CONFIG\n    ${PY_BODIES[c.functionId]}\n\nif __name__ == "__main__":\n    print(json.dumps(run_applet(), ensure_ascii=False, allow_nan=False))\n`;
+ return `# AUDK v1.1 — Reviewed function: ${c.functionId}\n# Local Python 3.10+. No dynamic imports, eval, shell or network calls.\nimport json\nimport math\nimport statistics\n\n_CONFIG=json.loads(${JSON.stringify(JSON.stringify(c.arguments))})\n\ndef run_applet():\n    args = _CONFIG\n    ${PY_BODIES[c.functionId]}\n\nif __name__ == "__main__":\n    print(json.dumps(run_applet(), ensure_ascii=False, allow_nan=False))\n`;
 }
 export function buildUniversalCandidate(config){
  const c=validateUniversalConfig(config),result=executeUniversal(c),recipe=getRecipe(c.functionId);
