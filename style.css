@@ -17,3 +17,9 @@
 .hta-card{background:var(--surface,#fff);border:1px solid var(--border,#d8e2ed);border-radius:14px;padding:19px;display:flex;align-items:flex-start;flex-direction:column;gap:12px}
 .hta-card h3{margin:0}.hta-card p{margin:0;flex:1}.hta-source{font-size:13px;text-decoration:underline}
 @media(max-width:850px){.hta-grid{grid-template-columns:1fr}}
+/* AUDK v0.4 — live navigation / responsive accessibility */
+.side-link{font-family:inherit;text-align:left;border:0;background:transparent;width:100%;cursor:pointer}
+.side-link:hover,.side-link:focus-visible{background:#172a39;color:#d7f6f4;outline:2px solid transparent}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+[hidden]{display:none!important}
+@media(max-width:710px){.sidebar{gap:2px}.sidebar .side-link{display:flex;padding:8px 10px}.sidebar .side-label{display:none}.sidebar .library-list{display:none}.sidebar-foot{display:none}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.sidebar .brand{grid-column:1/-1}.side-link{font-size:11px}}

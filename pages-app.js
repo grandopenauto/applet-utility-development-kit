@@ -1,3 +1,4 @@
+import {initializeNavigation} from './navigation-ui.js';
 import {executeMacro, validateMacro, generateJavaScript, checkMacro} from './src/engine.mjs';
 const $ = id => document.getElementById(id);
 const wizard = $('wizard');
@@ -30,11 +31,7 @@ async function post(path, body) {
     default: throw new Error('This endpoint is available only from the local Node.js server');
   }
 }
-function showPanel(tab){
-  for (const button of document.querySelectorAll('[data-tab]')) button.classList.toggle('active',button.dataset.tab===tab);
-  for (const panel of document.querySelectorAll('.panel'))panel.classList.toggle('active',panel.id===`panel-${tab}`);
-}
-document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.tab)));
+const showPanel=initializeNavigation();
 
 function buildElement(tag,text,cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(cls)el.className=cls;return el;}
 function showTrace(){

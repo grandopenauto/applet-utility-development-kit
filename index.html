@@ -11,22 +11,27 @@
     <aside class="sidebar">
       <div class="brand"><div class="brandmark">A<span>✳</span></div><div><strong>AUDK Studio</strong><small>Applet Utility Development Kit</small></div></div>
       <div class="side-label">WORKSPACE</div>
-      <div class="side-link selected">▦ <span>Applet Studio</span></div>
-      <div class="side-link">⎇ <span>Macro Runtime</span></div>
+      <button type="button" class="side-link selected" data-jump="configure">▦ <span>Applet Studio</span></button>
+      <button type="button" class="side-link" data-jump="compose">⎇ <span>Macro Runtime</span></button>
+      <button type="button" class="side-link" data-jump="factory">✦ <span>Applet Factory</span></button>
+      <button type="button" class="side-link" data-jump="blueprints">◇ <span>Function Blueprints</span></button>
+      <button type="button" class="side-link" data-jump="windows">▣ <span>Windows HTA Apps</span></button>
+      <button type="button" class="side-link" data-jump="api">↗ <span>API Reference</span></button>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.3.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.4.0 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> Applet Studio <span>/</span> <strong>Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.3</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.4</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
-        <div class="workspace-head"><div><h2>Nested Loop Wizard</h2><p>Configure the applet, then run it locally in your browser. No server access required.</p></div><div class="actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
-        <nav class="tabs" aria-label="Applet workspace tabs">
+        <div class="workspace-head"><div><h2 id="workspace-title">Nested Loop Wizard</h2><p id="workspace-subtitle">Configure and run nested loops with step-by-step tracing.</p></div><div class="actions" id="wizard-actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
+        <nav class="tabs" role="tablist" aria-label="Applet workspace tabs">
           <button class="tab active" data-tab="configure">⚙ Configure</button>
           <button class="tab" data-tab="visualize">▦ Visualize</button>
           <button class="tab" data-tab="compose">⛓ Applet Composer</button>
           <button class="tab" data-tab="factory">✦ Applet Factory</button>
+          <button class="tab" data-tab="blueprints">◇ Function Blueprints</button>
           <button class="tab" data-tab="windows">▣ Windows HTA Apps</button>
           <button class="tab" data-tab="code">⌘ View code</button>
           <button class="tab" data-tab="macro">{} Macro JSON</button>
@@ -96,6 +101,28 @@
             </div>
           </div>
         </section>
+        <section id="panel-blueprints" class="panel">
+          <div class="panel-header"><div><h3>Function Blueprint Lab <span class="tag">New · v0.4</span></h3><p>Select a reusable function, configure its inputs, inspect real results, and generate a manifest, JavaScript and portable tests without compilation.</p></div><button id="blueprint-export" class="btn primary" type="button">↓ Export applet JSON</button></div>
+          <div class="notice" id="blueprint-notice" role="status" aria-live="polite">Select a function to build its wizard.</div>
+          <div class="flow-grid">
+            <form class="flow-editor" id="blueprint-form" autocomplete="off">
+              <div class="flow-group"><div class="flow-group-title"><strong>01 · Function catalog</strong><span>Reviewed, bounded operations</span></div><label>Choose function<select id="blueprint-type"></select></label><p class="muted" id="blueprint-summary"></p></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>02 · Applet identity</strong><span>Reusable versioned package</span></div><div class="input-grid two"><label>Applet ID<input id="blueprint-id" maxlength="50" value="my-function-applet"></label><label>Display name<input id="blueprint-name" maxlength="80" value="My reusable function"></label></div><label>Description<input id="blueprint-description" maxlength="300" value="A configurable function built with AUDK"></label></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>03 · Input data</strong><span>Preview is local to your browser</span></div><label>Data source<select id="blueprint-input"><option value="range">Number range</option><option value="list">JSON value list</option></select></label><div class="input-grid three" id="blueprint-range"><label>Start<input type="number" id="blueprint-start" value="1"></label><label>End (exclusive)<input type="number" id="blueprint-end" value="6"></label><label>Step<input type="number" id="blueprint-step" value="1"></label></div><div id="blueprint-list" hidden><label>Values (JSON array)<input id="blueprint-values" value="[1,2,3,4,5]"></label></div></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>04 · Function configuration</strong><span>Generated from blueprint schema</span></div><div id="blueprint-fields" class="input-grid two"></div></div>
+              <button type="submit" class="btn secondary">✓ Validate and run</button><p class="flow-safety">No eval, shell access, remote execution, or auto-publishing. Generated files require code review before publication.</p>
+            </form>
+            <div class="flow-output"><div class="stat-grid flow-stats"><div class="stat"><span>Result rows</span><strong id="blueprint-count">—</strong></div><div class="stat"><span>Generated artifacts</span><strong>3</strong></div></div>
+              <div class="flow-view-tabs"><button type="button" class="active" data-blueprint-view="preview">Result preview</button><button type="button" data-blueprint-view="json">Manifest</button><button type="button" data-blueprint-view="source">Code</button><button type="button" data-blueprint-view="tests">Tests</button></div>
+              <div id="blueprint-preview" data-blueprint-output="preview" class="table-wrap"></div>
+              <pre id="blueprint-json" data-blueprint-output="json" hidden class="codebox"></pre>
+              <pre id="blueprint-source" data-blueprint-output="source" hidden class="codebox"></pre>
+              <pre id="blueprint-tests" data-blueprint-output="tests" hidden class="codebox"></pre>
+              <div class="flow-toolbar-actions"><button id="blueprint-export-code" type="button" class="btn secondary">↓ JavaScript</button><button id="blueprint-export-tests" type="button" class="btn secondary">↓ Test file</button><button id="blueprint-compose" type="button" class="btn secondary">Open in Composer</button></div>
+              <p class="muted">Download all three artifacts into the same folder to run the generated Node.js test. Function creation is deterministic; arbitrary AI-generated code and automatic publishing are not yet enabled.</p>
+            </div>
+          </div>
+        </section>
         <section id="panel-windows" class="panel">
           <div class="panel-header"><div><h3>Windows HTA Companion Utilities <span class="tag">New · v0.3</span></h3><p>Download small standalone Windows configuration wizards. They create AUDK-compatible JSON that you can copy into the main studio.</p></div></div>
           <div class="notice-banner"><strong>Security and compatibility:</strong> HTA is a legacy Windows high-trust application format, not an ordinary webpage. Review the source before opening, run only trusted files, and respect organizational security policies. These two samples are offline-only and contain no ActiveX, shell access, file writes or network requests.</div>
@@ -109,7 +136,7 @@
         <section id="panel-code" class="panel"><div class="panel-header"><div><h3>Generated JavaScript</h3><p>Readable, portable code. Edit or embed it in your project.</p></div><button id="copy-code" class="btn secondary">Copy code</button></div><pre id="code-output" class="codebox">Run the applet to generate code.</pre></section>
         <section id="panel-macro" class="panel"><div class="panel-header"><div><h3>Macro configuration</h3><p>A versionable JSON description interpreted directly by the runtime.</p></div><button id="copy-macro" class="btn secondary">Copy JSON</button></div><textarea id="macro-output" class="macrobox" spellcheck="false" aria-label="Macro JSON"></textarea><div class="editor-footer"><span>Change the JSON and apply it without recompiling software.</span><button id="apply-macro" class="btn secondary">Apply JSON to wizard</button></div></section>
         <section id="panel-tests" class="panel"><div class="panel-header"><div><h3>Built-in Test Laboratory</h3><p>Validate execution bounds, output count, and branch tracing.</p></div><button id="run-tests" class="btn primary">✓ Run checks</button></div><div id="test-results" class="test-results muted">No tests run yet.</div></section>
-        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>POST /api/factory/preview</code><span>Generate and validate an applet manifest without publishing it</span></div><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
+        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>POST /api/factory/preview</code><span>Generate and validate an applet manifest without publishing it</span></div><div class="endpoint"><code>GET /api/blueprints</code><span>Read available schema-driven functions</span></div><div class="endpoint"><code>POST /api/blueprints/preview</code><span>Generate, test, and preview an applet blueprint</span></div><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
       </section>
       <footer>AUDK · Browser demo · Powered by reusable declarative applets · <a href="https://digitalcrossdock.com">Digital CrossDock</a></footer>
     </main>
@@ -117,5 +144,6 @@
   <script type="module" src="./pages-app.js"></script>
   <script type="module" src="./composer-ui.js"></script>
   <script type="module" src="./factory-ui.js"></script>
+  <script type="module" src="./blueprint-ui.js"></script>
 </body>
 </html>
