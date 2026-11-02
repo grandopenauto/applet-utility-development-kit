@@ -21,17 +21,15 @@ $out = Join-Path $root 'worker.stdout'
 $err = Join-Path $root 'worker.stderr'
 $createdUser = $false
 function Grant-ScopedAcl([string]$path,[string]$principal,[string]$permissions) {
-  & icacls.exe $path /grant:r "${principal}:${permissions}" /T /Q | Out-Null
+  & icacls.exe $path /grant:r "${principal}:${permissions}" /Q | Out-Null
   if ($LASTEXITCODE -ne 0) { throw 'AUDK_CI_ACL_GRANT_FAILED' }
 }
 function Protect-Tree([string]$path) {
-  & icacls.exe $path /inheritance:r /T /C /Q | Out-Null
+  & icacls.exe $path /inheritance:r /Q | Out-Null
   if ($LASTEXITCODE -ne 0) { throw 'AUDK_CI_ACL_INHERITANCE_FAILED' }
 }
 try {
   New-Item -ItemType Directory -Path $src,$data,$secure -Force | Out-Null
-  Copy-Item -Path (Join-Path $repo '*') -Destination $src -Recurse -Force -ErrorAction Stop
-  Copy-Item (Join-Path $repo '.gitattributes') $src -Force
   $passwordText = [Guid]::NewGuid().ToString('N') + 'aA!9'
   $password = ConvertTo-SecureString $passwordText -AsPlainText -Force
   New-LocalUser -Name $username -Password $password -Description 'AUDK ephemeral non-admin CI sandbox identity' -PasswordNeverExpires -UserMayNotChangePassword | Out-Null
@@ -39,7 +37,6 @@ try {
   $sid = (Get-LocalUser -Name $username).SID.Value
   if ($sid -notmatch '^S-1-5-21-') { throw 'AUDK_CI_INVALID_LOCAL_ACCOUNT_SID' }
   # Prevent broad inherited access to the sentinel; require source read-only and job write.
-  Set-Content -LiteralPath $sentinel -Value 'CI ONLY synthetic sentinel' -NoNewline
   Protect-Tree $src
   Protect-Tree $data
   Protect-Tree $secure
@@ -60,6 +57,11 @@ try {
   # Parent traversability is needed for source+data. Never grant user access to private.
   & icacls.exe $root /grant "${username}:(RX)" /Q | Out-Null
   if ($LASTEXITCODE -ne 0) { throw 'AUDK_CI_PARENT_TRAVERSE_DENIED' }
+  # Secure empty directory roots before copying their contents; copied files inherit
+  # intended ACLs instead of losing access during recursive inheritance removal.
+  Copy-Item -Path (Join-Path $repo '*') -Destination $src -Recurse -Force -ErrorAction Stop
+  Copy-Item (Join-Path $repo '.gitattributes') $src -Force
+  Set-Content -LiteralPath $sentinel -Value 'CI ONLY synthetic sentinel' -NoNewline
   # The source-lock is verified against the staged files before the job runs.
   & $node (Join-Path $src 'scripts\verify-worker-lock.mjs')
   if ($LASTEXITCODE -ne 0) { throw 'AUDK_CI_SOURCE_LOCK_DENIED' }
