@@ -43,6 +43,12 @@ try {
   Protect-Tree $src
   Protect-Tree $data
   Protect-Tree $secure
+  # The hosted runner may have a filtered administrator token; preserve its own
+  # explicit ACL access while limiting the disposable non-admin account.
+  $runnerSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+  Grant-ScopedAcl $src $runnerSid '(OI)(CI)F'
+  Grant-ScopedAcl $data $runnerSid '(OI)(CI)F'
+  Grant-ScopedAcl $secure $runnerSid '(OI)(CI)F'
   Grant-ScopedAcl $src 'SYSTEM' '(OI)(CI)F'
   Grant-ScopedAcl $src 'BUILTIN\Administrators' '(OI)(CI)F'
   Grant-ScopedAcl $src $username '(OI)(CI)RX'
