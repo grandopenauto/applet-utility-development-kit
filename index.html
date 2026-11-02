@@ -18,6 +18,7 @@
       <button type="button" class="side-link" data-jump="library">◈ <span>Applet Library Browser</span></button>
       <button type="button" class="side-link" data-jump="universal">⚗ <span>Universal Wizard</span></button>
       <button type="button" class="side-link" data-jump="review">☑ <span>Review Desk</span></button>
+      <button type="button" class="side-link" data-jump="expansion">⚙ <span>Expansion Queue</span></button>
       <button type="button" class="side-link" data-jump="python">🐍 <span>Python Explorer</span></button>
       <button type="button" class="side-link" data-jump="windows">▣ <span>Windows HTA Apps</span></button>
       <button type="button" class="side-link" data-jump="api">↗ <span>API Reference</span></button>
@@ -39,6 +40,7 @@
           <button class="tab" data-tab="library">◈ Library Browser</button>
           <button class="tab" data-tab="universal">⚗ Universal Wizard</button>
           <button class="tab" data-tab="review">☑ Review Desk</button>
+          <button class="tab" data-tab="expansion">⚙ Expansion Queue</button>
           <button class="tab" data-tab="python">🐍 Python Explorer</button>
           <button class="tab" data-tab="windows">▣ Windows HTA Apps</button>
           <button class="tab" data-tab="code">⌘ View code</button>
@@ -194,6 +196,14 @@
             </div>
           </div>
         </section>
+        <section id="panel-expansion" class="panel">
+          <div class="panel-header"><div><h3>Automated Applet Expansion Queue <span class="tag">New · v1.0</span></h3><p>Rank Python discovery records, inspect heuristic wizard-field suggestions, and export a review-only intake. No automatic code execution or publishing.</p></div></div>
+          <div class="notice-banner"><strong>Controlled growth:</strong> Weekly GitHub Actions metadata scans produce inspection artifacts, not live code changes. Candidate scores are development estimates, not safety certifications. The published library remains pinned until code review and CI.</div>
+          <div class="flow-toolbar catalog-filters"><label>Find a candidate<input type="search" id="expansion-search" maxlength="80" placeholder="math.cos, statistics, collections…"></label><label>Review state<select id="expansion-filter"><option value="review-candidate">Review candidates</option><option value="requires-special-review">Needs special review</option><option value="all">All candidates</option></select></label></div>
+          <p id="expansion-status" class="notice" role="status">Loading pinned candidate queue…</p><p id="expansion-count" class="muted"></p>
+          <div class="catalog-layout"><div id="expansion-results" class="catalog-results"></div><div id="expansion-detail" class="catalog-detail"><p class="muted">Select a candidate.</p></div></div>
+          <p class="muted">Run <code>npm run expansion:scan</code> locally to regenerate the queue. The scheduled workflow is read-only and uploads metadata artifacts for human review.</p>
+        </section>
         <section id="panel-python" class="panel">
           <div class="panel-header"><div><h3>Python Function Discovery <span class="tag">New · v0.5</span></h3><p>Explore an allowlisted snapshot of Python callables, signatures, and brief documentation. These entries are discovery candidates, not installed AUDK applets.</p></div></div>
           <div class="notice-banner"><strong>Safe discovery.</strong> Python packages are inspected locally by <code>tools/python_discover.py</code> and exported as a read-only catalog. This browser does not import modules, execute Python, or install software. Review a candidate before turning it into a runnable applet.</div>
@@ -226,6 +236,7 @@
   <script type="module" src="./blueprint-ui.js"></script>
   <script type="module" src="./library-ui.js"></script>
   <script type="module" src="./python-discovery-ui.js"></script>
+  <script type="module" src="./expansion-ui.js"></script>
   <script type="module" src="./universal-ui.js"></script>
   <script type="module" src="./review-ui.js"></script>
 </body>

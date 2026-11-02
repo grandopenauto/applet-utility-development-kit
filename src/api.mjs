@@ -1,3 +1,5 @@
+import {readFile} from 'node:fs/promises';
+import {validateExpansionQueue} from './expansion.mjs';
 import { executeMacro, generateJavaScript, checkMacro, validateMacro } from './engine.mjs';
 import { loadRegistry } from './registry.mjs';
 import {filterCatalog} from './catalog-browser.mjs';
@@ -9,7 +11,14 @@ import {UNIVERSAL_RECIPES,buildUniversalCandidate} from './universal-wizard.mjs'
 import {createReviewPacket,verifyReviewPacket,preparePromotionProposal} from './review.mjs';
 
 export async function apiResponse(method,pathname,body,query={}) {
-  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'0.9.0',mode:'local-first'}};
+  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'1.0.0',mode:'local-first'}};
+  if (method==='GET' && pathname==='/api/expansion/queue') {
+    const data=JSON.parse(await readFile(new URL('../catalog/expansion-queue.json',import.meta.url),'utf8'));
+    validateExpansionQueue(data);
+    const requested=Number(query.limit??25);if(!Number.isInteger(requested)||requested<1||requested>100)throw Error('Limit must be 1-100');
+    const records=data.candidates.filter(c=>(!query.state||c.state===query.state)&&(!query.search||c.id.toLowerCase().includes(String(query.search).toLowerCase().slice(0,80))));
+    return {status:200,data:{schema:data.schema,summary:data.summary,candidates:records.slice(0,requested),totalMatching:records.length,readOnly:true}};
+  }
   if (method==='GET' && pathname==='/api/applets') return {status:200,data:{applets:await loadRegistry()}};
   if (method==='GET' && pathname==='/api/library/search') return {status:200,data:{applets:filterCatalog(await loadRegistry(),{search:query.search||'',category:query.category||'All',kind:query.kind||'All'})}};
   if (method==='POST' && pathname==='/api/validate') return {status:200,data:{valid:true,metadata:validateMacro(body)}};

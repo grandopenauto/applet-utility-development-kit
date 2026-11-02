@@ -1,4 +1,12 @@
-# AUDK v0.9 — Applet Utility Development Kit
+# AUDK v1.0 — Automated Applet Expansion Queue
+
+- **Expansion Queue:** Search and inspect metadata-only candidates ranked from the 354-function pinned Python discovery snapshot. The snapshot currently has 167 development review candidates, 173 needing special review, and 14 functions already supported by reviewed wizards. These are planning heuristics, not executable additions. The permanent library remains **12 validated applets**.
+- **Suggested configuration fields:** Signature-based names and tentative types are labeled unverified. Users can export a non-executable review intake; no automatic code execution or installation.
+- **Weekly metadata worker:** `.github/workflows/expansion-scan.yml` runs Monday 16:17 UTC (plus manual trigger), regenerates a read-only scan and candidate queue, compares drift, runs tests, and uploads short-lived inspection artifacts. It has **read-only GitHub permissions**, not authority to push or publish.
+- **Local API:** `GET /api/expansion/queue?search=math.cos&limit=25` reads bounded queue metadata. GitHub Pages hosts only the static user interface.
+- **Reproducibility:** `npm run expansion:scan`, `npm run expansion:diff`. See [Expansion Engine](docs/EXPANSION_ENGINE.md) for review gates, risks and VPS migration criteria.
+
+# AUDK — Applet Utility Development Kit
 
 **Live studio:** https://audk.digitalcrossdock.com  |  **Repository:** https://github.com/grandopenauto/applet-utility-development-kit
 

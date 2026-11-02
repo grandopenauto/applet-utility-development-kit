@@ -1,0 +1,42 @@
+name: AUDK Weekly Python Discovery Scan
+on:
+  workflow_dispatch:
+  schedule:
+    # Monday 16:17 UTC; schedule can be delayed and is not a real-time service.
+    - cron: '17 16 * * 1'
+permissions:
+  contents: read
+jobs:
+  metadata-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Scan allowlisted standard library only
+        run: python tools/python_discover.py --output /tmp/python-fresh.json
+      - name: Build review-only queue and compare pinned catalog
+        run: |
+          node scripts/build-expansion-queue.mjs --catalog /tmp/python-fresh.json --output /tmp/audk-expansion-queue.json
+          node scripts/diff-python-catalog.mjs --baseline catalog/python-standard-library.json --current /tmp/python-fresh.json --output /tmp/audk-discovery-diff.json
+      - name: Validate application and applet catalog
+        run: |
+          npm test
+          npm run check
+      - name: Publish inspection artifacts (NOT repository changes)
+        uses: actions/upload-artifact@v4
+        with:
+          name: audk-review-only-python-discovery
+          path: |
+            /tmp/python-fresh.json
+            /tmp/audk-expansion-queue.json
+            /tmp/audk-discovery-diff.json
+          retention-days: 30
+          if-no-files-found: error
+# No write permissions, no auto-PR, no auto-merge, no installation or code execution
+# from discovered functions. The public Pages catalog is pinned until reviewed.
