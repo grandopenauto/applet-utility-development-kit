@@ -1,18 +1,25 @@
-name: Validate AUDK
+name: Validate Applet Library
 on:
   push:
   pull_request:
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - run: npm test
       - run: npm run check
-# Pages: configured through GitHub Settings -> Pages -> main/(root).
-# Generated privileged code must be reviewed before publication.
+      - run: node scripts/verify-worker-lock.mjs
+# No publication or VPS deployment.

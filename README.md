@@ -273,3 +273,7 @@ Job status: `GET /v1/jobs/<jobId>` with the same bearer token. Completed artifac
 ## Windows test compatibility (v1.3.1)
 
 Cross-platform test harness fixes: generated Node test subprocesses explicitly use the TAP reporter, and repository path checks use `fileURLToPath()` rather than URL pathname strings. No public build endpoint, unattended scheduling, or arbitrary-code execution was enabled.
+
+## v1.4 — Restricted Worker Admission
+
+A separate Windows-only, explicit operator worker rejects elevated or unknown identities; validates SHA-256 pins of seven approved implementation files; requires separate source and job data roots; and refuses automatic publication. Use `npm run worker:lock` after reviewed changes and `node scripts/verify-worker-lock.mjs` in CI. See `docs/RESTRICTED_WINDOWS_WORKER.md`. No dedicated Windows identity, service or public endpoint is installed by this source release.
