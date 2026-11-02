@@ -1,9 +1,9 @@
-# AUDK v1.1 — Build Reusable Software Components
+# AUDK Studio — Build Reusable Software Components
 
 **Build once. Configure, test, and reuse anywhere.** AUDK is the Applet Utility Development Kit, providing bounded, reusable software components, visual configuration, tested JavaScript/Python export and no-compile JSON macros.
 
-- **Current inventory (v1.1):** 22 validated published applets, including 18 pinned first-party Python-compatible utilities and four original macros/pipelines. The Universal Wizard exposes 24 allowlisted, bounded functions. The Python discovery snapshot remains 354 callables, of which 24 have reviewed wizards, 157 are development-review candidates and 173 need special review.
-- **This release adds ten utilities:** `math.trunc`, `math.fabs`, `math.degrees`, `math.radians`, `math.log10`, `math.log2`, `math.lcm`, `math.prod`, `math.sin`, and `math.cos`. Their JavaScript previews, exports and generated Python scripts are tested. Floating-point outputs may differ slightly by platform, so cross-language checks use bounded numerical tolerances.
+- **Current inventory (v1.8):** 28 validated library applets, including 24 pinned first-party Python-compatible utilities and four original macros/pipelines. The Universal Wizard exposes 24 allowlisted, bounded functions. The Python discovery snapshot has 354 callables, of which 24 have reviewed wizards, 157 are development-review candidates and 173 need special review.
+- **v1.1 introduced ten utilities:** `math.trunc`, `math.fabs`, `math.degrees`, `math.radians`, `math.log10`, `math.log2`, `math.lcm`, `math.prod`, `math.sin`, and `math.cos`. Their JavaScript previews, exports and generated Python scripts are tested. Floating-point outputs may differ slightly by platform, so cross-language checks use bounded numerical tolerances.
 - **Security:** These are first-party, deterministic, pure computation applets with validated input bounds. Python discovery records and weekly GitHub Actions scans remain non-executable, read-only review evidence. New third-party code still requires manual review and a GitHub pull request.
 - **Static deployment:** `https://audk.digitalcrossdock.com` on GitHub Pages. Express/Node APIs are local-only, and neither VPS services nor DNS records are modified.
 - **Verification:** Run `npm test`, `npm run check`, and `npm run expansion:scan` locally to reproduce registry and review-queue status. Older README sections below describe historical release milestones; counts there refer to their respective versions.
@@ -291,3 +291,7 @@ See `docs/WINDOWS_RESTRICTED_CI.md`. No permanent service, Windows task, IIS end
 ## v1.7 — Worker filesystem confinement
 
 The restricted Windows worker now requires existing, canonical, disjoint source and job directories before it starts. It refuses symlink/junction path components and rejects symbolic links in the source lock or any pinned source files. No directory is silently created during its preflight. The worker still processes only reviewed, first-party recipes, at most one job per explicit invocation, and publication stays disabled. These checks reduce path-confusion mistakes but **do not sandbox untrusted code**, restrict network traffic, or replace Windows ACLs or OS-level isolation. The v1.6 disposable non-admin Windows CI proof remains the real operating-system permission check.
+
+## v1.8 — Offline Build Request Handoff
+
+The public Studio exports a versioned, metadata-only handoff (`audk.build-handoff.v1`), not an executable applet, API token, or a remote command. The operator importer validates a strict schema, a fresh timestamp, a reviewed recipe/assembly-plan binding, and the existing private build request rules. It **only inspects by default**; `--enqueue` is explicit, and reviewed-build intake also needs `--approve-reviewed`. Enqueueing never runs a worker or publishes. See `docs/BUILD_HANDOFF.md`. The public site remains GitHub Pages with no exposed VPS endpoint.

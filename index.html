@@ -26,10 +26,10 @@
       <button type="button" class="side-link" data-jump="api">↗ <span>API Reference</span></button>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v1.3.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v1.8 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v1.3</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v1.8</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build Reusable Software Components.</h1><p>Build once. Configure, test, and reuse anywhere. Connect applets into working systems, export JavaScript or Python, and run supported macros without recompiling.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
         <div class="workspace-head"><div><h2 id="workspace-title">Nested Loop Wizard</h2><p id="workspace-subtitle">Configure and run nested loops with step-by-step tracing.</p></div><div class="actions" id="wizard-actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
@@ -217,13 +217,13 @@
           <p class="muted">Run <code>npm run assembly:plan</code> to regenerate the plan, or <code>npm run assembly:plan -- --spec-dir /tmp/audk-proposals --limit 10</code> to export ten offline candidate specifications. No public build endpoint is installed.</p>
         </section>
         <section id="panel-build-service" class="panel">
-          <div class="panel-header"><div><h3>Private Build Service <span class="tag">v1.3 · operator staging</span></h3><p>Prepare safe, schema-checked job requests for a private, authenticated build queue. This public page never sends jobs or credentials to a server.</p></div></div>
+          <div class="panel-header"><div><h3>Build Request Handoff <span class="tag">v1.8 · offline operator import</span></h3><p>Prepare a portable, schema-checked request envelope. Inspect it locally, then explicitly enqueue it through the private operator CLI. This website never sends requests or credentials to a server.</p></div></div>
           <div class="notice-banner"><strong>Private-by-design:</strong> The public AUDK website cannot invoke the VPS, run Python, or publish applets. Only an authenticated loopback-only operator API accepts these requests after local transfer.</div>
           <div class="input-grid two"><label>Function<select id="builder-function"><option value="math.sqrt">math.sqrt</option></select></label><label>Build mode<select id="builder-mode"><option value="reviewed-build">Build reviewed recipe (allowlisted only)</option><option value="specification">Generate non-executable specification</option></select></label></div>
-          <div class="actions"><button type="button" class="btn primary" id="builder-prepare">Prepare build request</button><button type="button" class="btn secondary" id="builder-download" disabled>↓ Download request JSON</button></div>
+          <div class="actions"><button type="button" class="btn primary" id="builder-prepare">Prepare build request</button><button type="button" class="btn secondary" id="builder-download" disabled>↓ Download handoff JSON</button></div>
           <p id="builder-status" class="notice" role="status">Select a function and prepare a request. No remote worker is connected.</p>
           <pre id="builder-preview" class="code-block" style="white-space:pre-wrap;overflow-wrap:anywhere">Job request preview will appear here.</pre>
-          <small class="muted">Private operator flow: review request → authenticate on loopback → POST /v1/jobs → run worker separately → inspect checksummed artifacts → review PR. A public gateway is a future, separately secured feature.</small>
+          <small class="muted">Private operator flow: download JSON → inspect with npm run build:import-handoff → explicitly enqueue → run approved worker separately → verify artifacts → review PR. The public Studio has no build API connection.</small>
         </section>
         <section id="panel-python" class="panel">
           <div class="panel-header"><div><h3>Python Function Discovery <span class="tag">New · v0.5</span></h3><p>Explore an allowlisted snapshot of Python callables, signatures, and brief documentation. These entries are discovery candidates, not installed AUDK applets.</p></div></div>
