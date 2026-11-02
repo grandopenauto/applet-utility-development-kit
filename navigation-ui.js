@@ -8,6 +8,7 @@ export const SECTIONS=Object.freeze({
  library:{title:'Applet Library Browser',subtitle:'Search verified applets, inspect examples and open their configuration wizards.',group:'Applet Library'},
  universal:{title:'Universal Applet Wizard',subtitle:'Configure reviewed Python callables using generated parameter forms.',group:'Universal Wizard'},
  review:{title:'Applet Review Desk',subtitle:'Verify candidate evidence and prepare a human-reviewed promotion proposal.',group:'Review & Promotion'},
+ 'build-service':{title:'Private Build Requests',subtitle:'Prepare validated, local-only build requests without exposing VPS controls.',group:'Private Build Service'},
  assembly:{title:'Applet Assembly Line',subtitle:'Compare SDK functions to published applets and export candidate development specs.',group:'Assembly Line'},
  expansion:{title:'Applet Expansion Queue',subtitle:'Rank discovery candidates and prepare review-only applet proposals.',group:'Expansion Engine'},
  python:{title:'Python Function Explorer',subtitle:'Explore a curated Python standard-library discovery snapshot.',group:'Python Explorer'},

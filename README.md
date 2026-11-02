@@ -246,3 +246,26 @@ The public `#assembly` section now shows the discovered SDK-to-published-applet 
 Six previously reviewed functions (`math.isqrt`, `math.floor`, `math.ceil`, `builtins.abs`, `builtins.min`, `builtins.max`) are now published as curated applets. The library contains 28 manifests: 24 reviewed Python-function presets and four original macros/pipelines. The pinned discovery snapshot has 354 callable entries, with 157 implementation candidates and 173 special-review candidates. Read [Assembly Line architecture](docs/ASSEMBLY_LINE.md) for the secure production path.
 
 **VPS decision:** no always-on service needed yet. The weekly GitHub Actions workflow writes only downloadable build reports and review-only specifications; private queue workers and protected API endpoints are a future deployment choice, not a public feature of this release.
+
+## v1.3 — Private Applet Build Service (prototype)
+
+AUDK now ships an **optional loopback-only build service**, completely separate from the public GitHub Pages interface and the existing local Studio demo. Its `POST /v1/jobs` endpoint accepts only an exact function identifier, a mode (`reviewed-build` or `specification`), and a 12–80 character idempotency key. It requires a private 32+ character bearer token provided through the `AUDK_BUILD_TOKEN` environment variable. No browser origin/CORS, public binding, uploads, code strings, dependencies, or arbitrary commands are accepted.
+
+The `reviewed-build` mode compiles only the 24 vetted AUDK recipes, into a durable staging folder **outside the public checkout**. A separate worker runs JavaScript syntax/tests and Python example checks, then creates checksummed artifact reports. These checks are **not isolation of untrusted code**; the worker must not accept generated or third-party executable recipes. The `specification` mode can prepare review-only design requests from the expansion queue; it does not compile them. No job writes to `library/`, pushes to GitHub, or publishes a release.
+
+Local operator quick start (Linux/macOS; use environment variables in PowerShell on Windows):
+
+```sh
+export AUDK_BUILD_DATA_DIR="$(mktemp -d)"
+export AUDK_BUILD_TOKEN="replace-with-a-private-random-operator-secret-at-least-32-chars"
+npm run build:serve-private
+# In another local terminal, with the same environment:
+curl -sS -X POST http://127.0.0.1:4193/v1/jobs \
+  -H "Authorization: Bearer $AUDK_BUILD_TOKEN" -H 'Content-Type: application/json' \
+  --data '{"functionId":"math.sqrt","mode":"reviewed-build","idempotencyKey":"unique-job-request-001"}'
+npm run build:work-once
+```
+
+Job status: `GET /v1/jobs/<jobId>` with the same bearer token. Completed artifacts are stored in `$AUDK_BUILD_DATA_DIR/jobs/<jobId>/` for *operator-only local review*, with SHA-256 checksums in `job.json`. The private API does not serve source artifacts. The worker is invoked deliberately (no scheduled task or daemon installed by AUDK). Do not expose this port through IIS, reverse proxies, firewall rules, tunnels, or public GitHub Pages scripts.
+
+**Windows VPS staging proposal:** `C:\HDP\AUDK` for separately reviewed, non-public experiments, with a dedicated low-privilege identity and ACLs before any service is installed. No public API routing is part of v1.3. See `docs/PRIVATE_BUILD_SERVICE.md`.
