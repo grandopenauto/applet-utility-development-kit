@@ -1,0 +1,27 @@
+{
+  "id": "python-builtins-sum",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Sum utility",
+  "description": "Add numeric values together",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-builtins-sum",
+    "name": "Sum utility",
+    "description": "Add numeric values together",
+    "functionId": "builtins.sum",
+    "arguments": {
+      "numbers": [
+        10,
+        20,
+        30
+      ]
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

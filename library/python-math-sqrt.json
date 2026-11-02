@@ -1,0 +1,23 @@
+{
+  "id": "python-math-sqrt",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Square root utility",
+  "description": "Compute the nonnegative square root of a number",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-sqrt",
+    "name": "Square root utility",
+    "description": "Compute the nonnegative square root of a number",
+    "functionId": "math.sqrt",
+    "arguments": {
+      "value": 144
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

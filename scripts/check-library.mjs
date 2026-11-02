@@ -9,7 +9,11 @@ const ids=new Set();
 for(const entry of entries){
   if(ids.has(entry.id))throw new Error('Duplicate applet id: '+entry.id);
   ids.add(entry.id);
-  if(entry.kind==='macro'){
+  if(entry.kind==='curated-function'){
+    const candidate=buildUniversalCandidate(entry.config);
+    if(candidate.result===undefined)throw Error('Missing curated result: '+entry.id);
+    if(!candidate.javaScript||!candidate.python||!candidate.testSource)throw Error('Curated function missing generated artifacts');
+  }else if(entry.kind==='macro'){
     const result=checkMacro(entry.config);generateJavaScript(entry.config);
     if(!result.passed) throw new Error('Failed self-test: '+entry.id);
   }else if(entry.kind==='universal-function'){

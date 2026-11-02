@@ -1,4 +1,4 @@
-/** AUDK v0.6 browser-only schema-driven applet candidate wizard. */
+/** AUDK v0.8 browser-only schema-driven applet candidate wizard. */
 import {UNIVERSAL_RECIPES,UNIVERSAL_SCHEMA,buildUniversalCandidate} from './src/universal-wizard.mjs';
 const $=id=>document.getElementById(id);
 const byId=Object.fromEntries(UNIVERSAL_RECIPES.map(x=>[x.id,x]));
@@ -76,3 +76,22 @@ for(const button of document.querySelectorAll('[data-universal-view]'))button.ad
 });
 window.addEventListener('audk:prefill-universal',e=>selectRecipe(e.detail?.functionId));
 selectRecipe(UNIVERSAL_RECIPES[0].id);
+
+// Library presets send an entire reviewed configuration rather than just a function ID.
+window.addEventListener('audk:load-universal',event=>{
+ const config=event.detail;
+ if(!config||!byId[config.functionId]){message('Unknown library function',true);return;}
+ selectRecipe(config.functionId);
+ $('universal-id').value=config.id;
+ $('universal-name').value=config.name;
+ $('universal-desc').value=config.description;
+ for(const field of fields.querySelectorAll('[data-argument]')){
+  const value=config.arguments?.[field.dataset.argument];
+  if(value===undefined)continue;
+  if(field.dataset.argType==='boolean')field.checked=Boolean(value);
+  else if(field.dataset.argType==='numberArray')field.value=JSON.stringify(value);
+  else field.value=String(value);
+ }
+ generate();
+ message('Loaded curated library preset '+config.functionId+'. You can customize it and submit a new candidate for review.');
+});

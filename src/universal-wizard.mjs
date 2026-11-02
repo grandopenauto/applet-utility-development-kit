@@ -1,4 +1,4 @@
-/** AUDK v0.6 — reviewed, declarative Python functions to portable applet candidates.
+/** AUDK v0.8 — reviewed, declarative Python functions to portable applet candidates.
  * Discovery does not grant execution privileges. Only functions in RECIPES can run.
  */
 export const UNIVERSAL_SCHEMA='audk.universal.v1';
@@ -12,7 +12,13 @@ export const UNIVERSAL_RECIPES=Object.freeze([
  {id:'statistics.median',title:'Median',category:'Statistics',description:'Calculate the median of a bounded numeric list',fields:[numbers([1,5,3,9])],examples:[{label:'Median of 1, 5, 3, 9',args:{numbers:[1,5,3,9]}}]},
  {id:'builtins.sum',title:'Sum',category:'Collections',description:'Add numeric values together',fields:[numbers([10,20,30])],examples:[{label:'Sum of 10, 20, 30',args:{numbers:[10,20,30]}}]},
  {id:'builtins.sorted',title:'Sort numbers',category:'Collections',description:'Sort numeric values in ascending or descending order',fields:[numbers([8,2,5,1]),{name:'descending',label:'Descending',type:'boolean',default:false}],examples:[{label:'Ascending numbers',args:{numbers:[8,2,5,1],descending:false}},{label:'Descending numbers',args:{numbers:[8,2,5,1],descending:true}}]},
- {id:'builtins.len',title:'Text length',category:'Text',description:'Count Unicode code points in a text string',fields:[{name:'text',label:'Text',type:'string',default:'Digital CrossDock',maxLength:256}],examples:[{label:'Digital CrossDock',args:{text:'Digital CrossDock'}}]}
+ {id:'builtins.len',title:'Text length',category:'Text',description:'Count Unicode code points in a text string',fields:[{name:'text',label:'Text',type:'string',default:'Digital CrossDock',maxLength:256}],examples:[{label:'Digital CrossDock',args:{text:'Digital CrossDock'}}]},
+ {id:'math.isqrt',title:'Integer square root',category:'Mathematics',description:'Largest integer whose square is no greater than n',fields:[number('value','Nonnegative integer',125,0,1e12,true)],examples:[{label:'Integer square root of 125',args:{value:125}},{label:'Perfect square',args:{value:10000}}]},
+ {id:'math.floor',title:'Round down',category:'Mathematics',description:'Round a finite number toward negative infinity',fields:[number('value','Input number',-2.4,-1e9,1e9)],examples:[{label:'Round down negative number',args:{value:-2.4}},{label:'Round down positive number',args:{value:2.9}}]},
+ {id:'math.ceil',title:'Round up',category:'Mathematics',description:'Round a finite number toward positive infinity',fields:[number('value','Input number',-2.4,-1e9,1e9)],examples:[{label:'Round up negative number',args:{value:-2.4}},{label:'Round up positive number',args:{value:2.1}}]},
+ {id:'builtins.abs',title:'Absolute value',category:'Mathematics',description:'Magnitude of a finite numeric input',fields:[number('value','Input number',-18,-1e9,1e9)],examples:[{label:'Absolute value of -18',args:{value:-18}},{label:'Absolute value of 5.5',args:{value:5.5}}]},
+ {id:'builtins.min',title:'Minimum value',category:'Collections',description:'Find the smallest numeric value in a nonempty list',fields:[numbers([5,-2,8,1])],examples:[{label:'Mixed numeric list',args:{numbers:[5,-2,8,1]}}]},
+ {id:'builtins.max',title:'Maximum value',category:'Collections',description:'Find the largest numeric value in a nonempty list',fields:[numbers([5,-2,8,1])],examples:[{label:'Mixed numeric list',args:{numbers:[5,-2,8,1]}}]}
 ]);
 const getRecipe=id=>UNIVERSAL_RECIPES.find(r=>r.id===id);
 const validId=id=>typeof id==='string'&&/^[a-z][a-z0-9-]{2,49}$/.test(id);
@@ -55,6 +61,12 @@ export function executeUniversal(config){
   case 'builtins.sum':return a.numbers.reduce((acc,x)=>acc+x,0);
   case 'builtins.sorted':return [...a.numbers].sort((a,b)=>c.arguments.descending?b-a:a-b);
   case 'builtins.len':return [...a.text].length;
+  case 'math.isqrt':return Math.floor(Math.sqrt(a.value));
+  case 'math.floor':return Math.floor(a.value);
+  case 'math.ceil':return Math.ceil(a.value);
+  case 'builtins.abs':return Math.abs(a.value);
+  case 'builtins.min':return Math.min(...a.numbers);
+  case 'builtins.max':return Math.max(...a.numbers);
   default:throw Error('Unsupported reviewed function');
  }
 }
@@ -66,7 +78,13 @@ const JS_BODIES={
  'statistics.median':'const list=[...args.numbers].sort((a,b)=>a-b);const mid=Math.floor(list.length/2);return list.length%2?list[mid]:(list[mid-1]+list[mid])/2;',
  'builtins.sum':'return args.numbers.reduce((s,n)=>s+n,0);',
  'builtins.sorted':'return [...args.numbers].sort((a,b)=>args.descending?b-a:a-b);',
- 'builtins.len':'return [...args.text].length;'
+ 'builtins.len':'return [...args.text].length;',
+ 'math.isqrt':'return Math.floor(Math.sqrt(args.value));',
+ 'math.floor':'return Math.floor(args.value);',
+ 'math.ceil':'return Math.ceil(args.value);',
+ 'builtins.abs':'return Math.abs(args.value);',
+ 'builtins.min':'return Math.min(...args.numbers);',
+ 'builtins.max':'return Math.max(...args.numbers);'
 };
 const PY_BODIES={
  'math.sqrt':'return math.sqrt(args["value"])',
@@ -76,15 +94,21 @@ const PY_BODIES={
  'statistics.median':'return statistics.median(args["numbers"])',
  'builtins.sum':'return sum(args["numbers"])',
  'builtins.sorted':'return sorted(args["numbers"], reverse=args["descending"])',
- 'builtins.len':'return len(args["text"])'
+ 'builtins.len':'return len(args["text"])',
+ 'math.isqrt':'return math.isqrt(args["value"])',
+ 'math.floor':'return math.floor(args["value"])',
+ 'math.ceil':'return math.ceil(args["value"])',
+ 'builtins.abs':'return abs(args["value"])',
+ 'builtins.min':'return min(args["numbers"])',
+ 'builtins.max':'return max(args["numbers"])'
 };
 export function generateUniversalJavaScript(config){
  const c=validateUniversalConfig(config);
- return `// AUDK v0.6 — Reviewed function: ${c.functionId}\n// Candidate for code review, not an automatically installed applet.\nexport function runApplet(){\n  const args=${JSON.stringify(c.arguments,null,2)};\n  ${JS_BODIES[c.functionId]}\n}\n`;
+ return `// AUDK v0.8 — Reviewed function: ${c.functionId}\n// Candidate for code review, not an automatically installed applet.\nexport function runApplet(){\n  const args=${JSON.stringify(c.arguments,null,2)};\n  ${JS_BODIES[c.functionId]}\n}\n`;
 }
 export function generateUniversalPython(config){
  const c=validateUniversalConfig(config);
- return `# AUDK v0.6 — Reviewed function: ${c.functionId}\n# Local Python 3.10+. No dynamic imports, eval, shell or network calls.\nimport json\nimport math\nimport statistics\n\n_CONFIG=json.loads(${JSON.stringify(JSON.stringify(c.arguments))})\n\ndef run_applet():\n    args = _CONFIG\n    ${PY_BODIES[c.functionId]}\n\nif __name__ == "__main__":\n    print(json.dumps(run_applet(), ensure_ascii=False, allow_nan=False))\n`;
+ return `# AUDK v0.8 — Reviewed function: ${c.functionId}\n# Local Python 3.10+. No dynamic imports, eval, shell or network calls.\nimport json\nimport math\nimport statistics\n\n_CONFIG=json.loads(${JSON.stringify(JSON.stringify(c.arguments))})\n\ndef run_applet():\n    args = _CONFIG\n    ${PY_BODIES[c.functionId]}\n\nif __name__ == "__main__":\n    print(json.dumps(run_applet(), ensure_ascii=False, allow_nan=False))\n`;
 }
 export function buildUniversalCandidate(config){
  const c=validateUniversalConfig(config),result=executeUniversal(c),recipe=getRecipe(c.functionId);

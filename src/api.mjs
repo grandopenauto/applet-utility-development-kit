@@ -8,7 +8,7 @@ import {UNIVERSAL_RECIPES,buildUniversalCandidate} from './universal-wizard.mjs'
 import {createReviewPacket,verifyReviewPacket,preparePromotionProposal} from './review.mjs';
 
 export async function apiResponse(method,pathname,body) {
-  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'0.7.0',mode:'local-first'}};
+  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'0.8.0',mode:'local-first'}};
   if (method==='GET' && pathname==='/api/applets') return {status:200,data:{applets:await loadRegistry()}};
   if (method==='POST' && pathname==='/api/validate') return {status:200,data:{valid:true,metadata:validateMacro(body)}};
   if (method==='POST' && pathname==='/api/run') return {status:200,data:executeMacro(body)};

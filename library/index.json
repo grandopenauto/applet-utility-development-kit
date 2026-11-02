@@ -1,0 +1,17 @@
+{
+  "schema": "audk.library-index.v1",
+  "files": [
+    "countdown-grid.json",
+    "digital-crossdock-routing.json",
+    "inventory-reorder.json",
+    "nested-loops.json",
+    "python-builtins-len.json",
+    "python-builtins-sorted.json",
+    "python-builtins-sum.json",
+    "python-math-factorial.json",
+    "python-math-gcd.json",
+    "python-math-sqrt.json",
+    "python-statistics-mean.json",
+    "python-statistics-median.json"
+  ]
+}

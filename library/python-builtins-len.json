@@ -1,0 +1,23 @@
+{
+  "id": "python-builtins-len",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Text length utility",
+  "description": "Count Unicode code points in a text string",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-builtins-len",
+    "name": "Text length utility",
+    "description": "Count Unicode code points in a text string",
+    "functionId": "builtins.len",
+    "arguments": {
+      "text": "Digital CrossDock"
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

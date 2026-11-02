@@ -1,0 +1,24 @@
+{
+  "id": "python-math-gcd",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Greatest common divisor utility",
+  "description": "Find the greatest common divisor of two nonnegative integers",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-gcd",
+    "name": "Greatest common divisor utility",
+    "description": "Find the greatest common divisor of two nonnegative integers",
+    "functionId": "math.gcd",
+    "arguments": {
+      "a": 48,
+      "b": 18
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

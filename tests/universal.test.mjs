@@ -11,7 +11,7 @@ import {SECTIONS,sectionFromHash} from '../navigation-ui.js';
 const create=(recipe,args=recipe.examples[0].args)=>({schema:UNIVERSAL_SCHEMA,functionId:recipe.id,id:'review-candidate',name:'Reviewed candidate',description:'Validated pure function candidate',arguments:args});
 
 test('all reviewed recipes have schema-defined fields, examples and candidate-only status',()=>{
- assert.equal(UNIVERSAL_RECIPES.length,8);
+ assert.equal(UNIVERSAL_RECIPES.length,14);
  for(const recipe of UNIVERSAL_RECIPES){
   assert.ok(recipe.fields.length>0&&recipe.examples.length>0);
   for(const example of recipe.examples){
@@ -70,7 +70,7 @@ test('rejects unchecked callables, extra parameter keys, unsafe values, and over
 
 test('local REST API returns safe recipes and preview, and navigation includes wizard',async()=>{
  const list=await apiResponse('GET','/api/universal/functions');
- assert.equal(list.status,200);assert.equal(list.data.recipes.length,8);
+ assert.equal(list.status,200);assert.equal(list.data.recipes.length,14);
  const preview=await apiResponse('POST','/api/universal/preview',create(UNIVERSAL_RECIPES[0]));
  assert.equal(preview.data.result,12);assert.equal(preview.data.manifest.status,'candidate-review-required');
  assert.ok(Object.hasOwn(SECTIONS,'universal'));

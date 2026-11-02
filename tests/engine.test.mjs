@@ -1,3 +1,4 @@
+import {executeUniversal} from '../src/universal-wizard.mjs';
 import {runPipeline} from '../src/pipeline.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -43,6 +44,7 @@ test('library entries validate and self-tests pass',async()=>{
  const registry=await loadRegistry();assert.ok(registry.length>=2);
  for(const a of registry){
    if(a.kind==='macro')assert.equal(checkMacro(a.config).passed,true);
+   else if(['curated-function','universal-function'].includes(a.kind))assert.notEqual(executeUniversal(a.config),undefined);
    else assert.ok(runPipeline(a.config).rows.length>=0);
  }
 });

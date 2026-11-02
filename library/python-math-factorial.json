@@ -1,0 +1,23 @@
+{
+  "id": "python-math-factorial",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Factorial utility",
+  "description": "Multiply all positive integers through n (bounded to exact JavaScript integers)",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-factorial",
+    "name": "Factorial utility",
+    "description": "Multiply all positive integers through n (bounded to exact JavaScript integers)",
+    "functionId": "math.factorial",
+    "arguments": {
+      "value": 6
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

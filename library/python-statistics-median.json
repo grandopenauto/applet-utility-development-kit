@@ -1,0 +1,28 @@
+{
+  "id": "python-statistics-median",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Median utility",
+  "description": "Calculate the median of a bounded numeric list",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-statistics-median",
+    "name": "Median utility",
+    "description": "Calculate the median of a bounded numeric list",
+    "functionId": "statistics.median",
+    "arguments": {
+      "numbers": [
+        1,
+        5,
+        3,
+        9
+      ]
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

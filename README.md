@@ -1,8 +1,16 @@
-# Applet Utility Development Kit (AUDK) — v0.7 working prototype
+# Applet Utility Development Kit (AUDK) — v0.8 working prototype
 
 **Build a function once. Configure it visually. Execute it as a macro. Export the code when needed.**
 
 This is a working proof-of-concept for an **Applet Utility Development Kit (AUDK)**: a portable library of versioned, testable executable applets that can be invoked from a wizard, JSON macro, CLI, or HTTP API. This project is distinct from Google's Agent Development Kit (ADK).
+
+## New in v0.8 — First-party Python applet library expansion
+
+- Eight **pinned first-party pure-function presets** now live in `library/` alongside the original four applets (12 total). Every preset has exact declarative configuration; its JavaScript and Python implementations are generated from reviewed allowlisted recipes, not arbitrary imports.
+- The schema-driven Universal Wizard now supports **14** bounded recipes (previously eight); new choices: `math.isqrt`, `math.floor`, `math.ceil`, `builtins.abs`, `builtins.min`, and `builtins.max`.
+- `library/index.json` is a versioned static listing so the GitHub Pages library sidebar can browse all published applets without a backend. Choosing a curated preset opens its complete parameters in the Universal Wizard.
+- `npm run check` validates that the curated presets exactly match their pinned definitions; `npm test` verifies Python/JavaScript preview equivalence and negative-input limits.
+- **Important review distinction:** curated entries are first-party recipes verified by automated cross-language tests. They are not human-signed third-party proposals. New external applets continue through v0.7 review packets, proposals, CI, and GitHub pull-request review. The public site cannot publish code.
 
 ## New in v0.2 — Applet Composer
 

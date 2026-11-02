@@ -94,7 +94,10 @@ $('macro-output').value=JSON.stringify(getForm(),null,2);
 async function loadRegistry(){
   try{
     // Only known, reviewed manifests are available in the public demonstration.
-    const manifests=['library/nested-loops.json','library/countdown-grid.json','library/digital-crossdock-routing.json','library/inventory-reorder.json','scenarios/digital-crossdock-slot-matrix.json'];
+    const index=await fetch('./library/index.json');if(!index.ok)throw Error('Could not load applet index');
+    const catalog=await index.json();
+    if(!Array.isArray(catalog.files)||catalog.files.length>100||!catalog.files.every(n=>/^[a-z0-9-]+\.json$/.test(n)))throw Error('Invalid applet index');
+    const manifests=catalog.files.map(file=>'library/'+file);
     registry=await Promise.all(manifests.map(async path=>{
       const res=await fetch('./'+path); if(!res.ok)throw new Error('Could not load '+path);
       return await res.json();
@@ -102,8 +105,8 @@ async function loadRegistry(){
     const list=$('library-list');list.replaceChildren();
     for(const entry of registry){
       const b=document.createElement('button');b.type='button';b.className='library-item';
-      b.appendChild(buildElement('strong',entry.config.name));b.appendChild(buildElement('small',entry.description));
-      b.addEventListener('click',()=>{if(entry.kind==='pipeline'){window.dispatchEvent(new CustomEvent('audk:load-pipeline',{detail:entry.config}));showPanel('compose');}else{setForm(entry.config);showPanel('configure');}setNotice(`Loaded library applet: ${entry.id}`);for(const el of list.children)el.classList.remove('active');b.classList.add('active');});
+      b.appendChild(buildElement('strong',entry.name||entry.config.name));b.appendChild(buildElement('small',entry.kind==='curated-function'?entry.description+' · Python + JavaScript':entry.description));
+      b.addEventListener('click',()=>{if(entry.kind==='pipeline'){window.dispatchEvent(new CustomEvent('audk:load-pipeline',{detail:entry.config}));showPanel('compose');}else if(['curated-function','universal-function'].includes(entry.kind)){window.dispatchEvent(new CustomEvent('audk:load-universal',{detail:entry.config}));showPanel('universal');}else{setForm(entry.config);showPanel('configure');}setNotice(`Loaded library applet: ${entry.id}`);for(const el of list.children)el.classList.remove('active');b.classList.add('active');});
       list.appendChild(b);
     }
   }catch(err){setNotice(err.message,true)}

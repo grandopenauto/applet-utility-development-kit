@@ -1,0 +1,29 @@
+{
+  "id": "python-builtins-sorted",
+  "kind": "curated-function",
+  "version": "0.8.0",
+  "name": "Sort numbers utility",
+  "description": "Sort numeric values in ascending or descending order",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-builtins-sorted",
+    "name": "Sort numbers utility",
+    "description": "Sort numeric values in ascending or descending order",
+    "functionId": "builtins.sorted",
+    "arguments": {
+      "numbers": [
+        8,
+        2,
+        5,
+        1
+      ],
+      "descending": false
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}
