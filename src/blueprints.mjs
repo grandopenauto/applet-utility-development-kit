@@ -1,5 +1,6 @@
 /** AUDK v0.4: declarative Function Blueprint wizard and review-gated applet packaging. */
 import {PIPELINE_SCHEMA,validatePipeline,runPipeline,generatePipelineCode} from './pipeline.mjs';
+import {generatePipelinePython} from './python-export.mjs';
 
 const option=(value,title)=>({value,title});
 export const FUNCTION_BLUEPRINTS=Object.freeze([
@@ -67,11 +68,12 @@ export function createFunctionBlueprint(spec){
  }
  const pipeline={schema:PIPELINE_SCHEMA,name,input:inputFromSpec(spec),steps:[st]};
  validatePipeline(pipeline);
- const manifest={id:spec.id,kind:'pipeline',version:'0.4.0',description,config:pipeline};
+ const manifest={id:spec.id,kind:'pipeline',version:'0.5.0',description,config:pipeline};
 
  const preview=runPipeline(pipeline);
  const code=generatePipelineCode(pipeline);
+ const pythonCode=generatePipelinePython(pipeline);
  const first=preview.rows.slice(0,5);
  const testSource=`import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport {runApplet} from './${manifest.id}.mjs';\n\ntest(${JSON.stringify(manifest.id+' generated function')}, () => {\n  const rows = runApplet();\n  assert.equal(rows.length, ${preview.rows.length});\n  assert.deepEqual(rows.slice(0, 5), ${JSON.stringify(first,null,2)});\n});\n`;
- return {manifest,preview,code,testSource,definition};
+ return {manifest,preview,code,pythonCode,testSource,definition};
 }

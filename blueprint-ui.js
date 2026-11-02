@@ -33,13 +33,14 @@ function refresh(){
   generated=createFunctionBlueprint(getConfig());
   $('blueprint-count').textContent=String(generated.preview.rows.length);
   $('blueprint-source').textContent=generated.code;
+  $('blueprint-python').textContent=generated.pythonCode;
   $('blueprint-json').textContent=JSON.stringify(generated.manifest,null,2);
   $('blueprint-tests').textContent=generated.testSource;
   $('blueprint-preview').replaceChildren(tableRows(generated.preview.rows));
   $('blueprint-export').disabled=false;
   $('blueprint-compose').disabled=false;
   info(`Ready · ${generated.definition.title} · ${generated.preview.rows.length} result rows · generated test available`);
- }catch(e){generated=null;$('blueprint-count').textContent='—';for(const id of ['blueprint-source','blueprint-json','blueprint-tests'])$(id).textContent='';$('blueprint-preview').replaceChildren();$('blueprint-export').disabled=true;$('blueprint-compose').disabled=true;info(e.message,true);}
+ }catch(e){generated=null;$('blueprint-count').textContent='—';for(const id of ['blueprint-source','blueprint-json','blueprint-python','blueprint-tests'])$(id).textContent='';$('blueprint-preview').replaceChildren();$('blueprint-export').disabled=true;$('blueprint-compose').disabled=true;info(e.message,true);}
 }
 function download(source,filename,type){const url=URL.createObjectURL(new Blob([source],{type}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 kind.addEventListener('change',renderInputs);
@@ -48,6 +49,7 @@ form.addEventListener('input',refresh);
 form.addEventListener('submit',e=>{e.preventDefault();refresh();});
 $('blueprint-export').addEventListener('click',()=>{if(!generated)return;const id=generated.manifest.id;download(JSON.stringify(generated.manifest,null,2)+'\n',id+'.json','application/json');});
 $('blueprint-export-code').addEventListener('click',()=>{if(generated)download(generated.code,generated.manifest.id+'.mjs','text/javascript');});
+$('blueprint-export-python').addEventListener('click',()=>{if(generated)download(generated.pythonCode,generated.manifest.id+'.py','text/x-python');});
 $('blueprint-export-tests').addEventListener('click',()=>{if(generated)download(generated.testSource,generated.manifest.id+'.test.mjs','text/javascript');});
 $('blueprint-compose').addEventListener('click',()=>{if(!generated)return;window.dispatchEvent(new CustomEvent('audk:load-pipeline',{detail:generated.manifest.config}));document.querySelector('[data-tab="compose"]')?.click();});
 for(const b of tabs)b.addEventListener('click',()=>{tabs.forEach(x=>x.classList.toggle('active',x===b));for(const p of document.querySelectorAll('[data-blueprint-output]'))p.hidden=p.dataset.blueprintOutput!==b.dataset.blueprintView;});

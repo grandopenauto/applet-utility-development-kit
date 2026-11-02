@@ -1,8 +1,9 @@
 import {EXAMPLE_PIPELINE,PIPELINE_SCHEMA,runPipeline,validatePipeline,generatePipelineCode} from './src/pipeline.mjs';
+import {generatePipelinePython} from './src/python-export.mjs';
 const $=id=>document.getElementById(id);
 const clone=x=>JSON.parse(JSON.stringify(x));
 const inventory={schema:PIPELINE_SCHEMA,name:'Inventory reorder diagnostic',input:{type:'list',field:'quantity',values:[2,4,6,8,10]},steps:[{id:'double-stock',type:'map',field:'quantity',operation:'multiply',value:2,outputField:'units'},{id:'minimum',type:'filter',field:'units',operator:'gte',value:10},{id:'total',type:'aggregate',operation:'sum',field:'units',outputField:'totalUnits'}]};
-let config=clone(EXAMPLE_PIPELINE), result=null, code='';
+let config=clone(EXAMPLE_PIPELINE), result=null, code='', pythonCode='';
 let activeTab='trace', editRevision=0;
 const allowed=['crossJoin','map','filter','switch','sort','aggregate'];
 const types={crossJoin:'Cross join',map:'Map / transform',filter:'Filter',switch:'Switch / branch',sort:'Sort',aggregate:'Aggregate'};
@@ -83,7 +84,7 @@ function renderTable(rows){
 function render(){
  $('flow-json').value=JSON.stringify(config,null,2);
  try{
-   const meta=validatePipeline(config);result=runPipeline(config);code=generatePipelineCode(config);
+   const meta=validatePipeline(config);result=runPipeline(config);code=generatePipelineCode(config);pythonCode=generatePipelinePython(config);
    $('flow-result-count').textContent=String(result.rows.length);
    $('flow-step-count').textContent=String(meta.stepCount);
    $('flow-output-trace').replaceChildren();
@@ -94,9 +95,10 @@ function render(){
      $('flow-output-trace').append(details);
    }
    $('flow-output-code').textContent=code;
+   $('flow-output-python').textContent=pythonCode;
    $('flow-output-json').textContent=JSON.stringify(config,null,2);
    status(`Ready · ${result.rows.length} output rows · ${result.trace.length-1} reusable applets`);
- }catch(err){result=null;code='';$('flow-result-count').textContent='—';$('flow-step-count').textContent='—';$('flow-output-code').textContent='';$('flow-output-trace').replaceChildren(make('p','muted',err.message));$('flow-output-json').textContent=JSON.stringify(config,null,2);status(err.message,true)}
+ }catch(err){result=null;code='';pythonCode='';$('flow-result-count').textContent='—';$('flow-step-count').textContent='—';$('flow-output-code').textContent='';$('flow-output-python').textContent='';$('flow-output-trace').replaceChildren(make('p','muted',err.message));$('flow-output-json').textContent=JSON.stringify(config,null,2);status(err.message,true)}
 }
 let timer;
 function refresh(){clearTimeout(timer);timer=setTimeout(render,80);}
@@ -133,6 +135,8 @@ $('flow-import').addEventListener('change',async e=>{
 $('flow-save').addEventListener('click',()=>{try{validatePipeline(config);localStorage.setItem('audk.saved.pipeline.v1',JSON.stringify(config));status('Saved this macro in this browser only.')}catch(e){status(e.message,true)}});
 $('flow-load').addEventListener('click',()=>{try{const raw=localStorage.getItem('audk.saved.pipeline.v1');if(!raw)throw Error('No locally saved macro on this browser');const c=JSON.parse(raw);validatePipeline(c);config=c;showForm();render();status('Loaded macro saved in this browser.')}catch(e){status(e.message,true)}});
 $('flow-copy-code').addEventListener('click',async()=>{try{if(!code)throw Error('Fix configuration first');await navigator.clipboard.writeText(code);status('Generated standalone JavaScript copied.')}catch(e){status(e.message,true)}});
+$('flow-copy-python').addEventListener('click',async()=>{try{if(!pythonCode)throw Error('Fix configuration first');await navigator.clipboard.writeText(pythonCode);status('Generated standalone Python copied.')}catch(e){status(e.message,true)}});
+$('flow-download-python').addEventListener('click',()=>{try{if(!pythonCode)throw Error('Fix configuration first');const url=URL.createObjectURL(new Blob([pythonCode],{type:'text/x-python'}));const a=make('a');a.href=url;a.download='audk-composed-macro.py';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}catch(e){status(e.message,true)}});
 $('flow-run').addEventListener('click',()=>render());
 showForm();render();
 

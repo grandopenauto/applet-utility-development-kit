@@ -15,14 +15,15 @@
       <button type="button" class="side-link" data-jump="compose">⎇ <span>Macro Runtime</span></button>
       <button type="button" class="side-link" data-jump="factory">✦ <span>Applet Factory</span></button>
       <button type="button" class="side-link" data-jump="blueprints">◇ <span>Function Blueprints</span></button>
+      <button type="button" class="side-link" data-jump="python">🐍 <span>Python Explorer</span></button>
       <button type="button" class="side-link" data-jump="windows">▣ <span>Windows HTA Apps</span></button>
       <button type="button" class="side-link" data-jump="api">↗ <span>API Reference</span></button>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.4.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.5.0 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.4</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.5</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
         <div class="workspace-head"><div><h2 id="workspace-title">Nested Loop Wizard</h2><p id="workspace-subtitle">Configure and run nested loops with step-by-step tracing.</p></div><div class="actions" id="wizard-actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
@@ -32,6 +33,7 @@
           <button class="tab" data-tab="compose">⛓ Applet Composer</button>
           <button class="tab" data-tab="factory">✦ Applet Factory</button>
           <button class="tab" data-tab="blueprints">◇ Function Blueprints</button>
+          <button class="tab" data-tab="python">🐍 Python Explorer</button>
           <button class="tab" data-tab="windows">▣ Windows HTA Apps</button>
           <button class="tab" data-tab="code">⌘ View code</button>
           <button class="tab" data-tab="macro">{} Macro JSON</button>
@@ -61,9 +63,10 @@
             </div>
             <div class="flow-output">
               <div class="stat-grid flow-stats"><div class="stat"><span>Final rows</span><strong id="flow-result-count">—</strong></div><div class="stat"><span>Connected applets</span><strong id="flow-step-count">—</strong></div></div>
-              <div class="flow-view-tabs"><button type="button" class="active" data-flow-view="trace">Step inspector</button><button type="button" data-flow-view="code">View code</button><button type="button" data-flow-view="json">Macro JSON</button></div>
+              <div class="flow-view-tabs"><button type="button" class="active" data-flow-view="trace">Step inspector</button><button type="button" data-flow-view="code">JavaScript</button><button type="button" data-flow-view="python">Python</button><button type="button" data-flow-view="json">Macro JSON</button></div>
               <div data-flow-output="trace" id="flow-output-trace"></div>
               <div data-flow-output="code" hidden><button id="flow-copy-code" class="btn secondary flow-copy" type="button">Copy JavaScript</button><pre class="codebox" id="flow-output-code"></pre></div>
+              <div data-flow-output="python" hidden><button id="flow-copy-python" class="btn secondary flow-copy" type="button">Copy Python</button><button id="flow-download-python" class="btn secondary flow-copy" type="button">↓ Download .py</button><pre class="codebox" id="flow-output-python"></pre></div>
               <pre data-flow-output="json" hidden class="codebox" id="flow-output-json"></pre>
               <div class="flow-safety">Browser-local execution · Up to 5,000 rows · No external requests, shell access, or automatic publishing</div>
             </div>
@@ -112,16 +115,25 @@
               <div class="flow-group"><div class="flow-group-title"><strong>04 · Function configuration</strong><span>Generated from blueprint schema</span></div><div id="blueprint-fields" class="input-grid two"></div></div>
               <button type="submit" class="btn secondary">✓ Validate and run</button><p class="flow-safety">No eval, shell access, remote execution, or auto-publishing. Generated files require code review before publication.</p>
             </form>
-            <div class="flow-output"><div class="stat-grid flow-stats"><div class="stat"><span>Result rows</span><strong id="blueprint-count">—</strong></div><div class="stat"><span>Generated artifacts</span><strong>3</strong></div></div>
-              <div class="flow-view-tabs"><button type="button" class="active" data-blueprint-view="preview">Result preview</button><button type="button" data-blueprint-view="json">Manifest</button><button type="button" data-blueprint-view="source">Code</button><button type="button" data-blueprint-view="tests">Tests</button></div>
+            <div class="flow-output"><div class="stat-grid flow-stats"><div class="stat"><span>Result rows</span><strong id="blueprint-count">—</strong></div><div class="stat"><span>Generated artifacts</span><strong>4</strong></div></div>
+              <div class="flow-view-tabs"><button type="button" class="active" data-blueprint-view="preview">Result preview</button><button type="button" data-blueprint-view="json">Manifest</button><button type="button" data-blueprint-view="source">JavaScript</button><button type="button" data-blueprint-view="python">Python</button><button type="button" data-blueprint-view="tests">Tests</button></div>
               <div id="blueprint-preview" data-blueprint-output="preview" class="table-wrap"></div>
               <pre id="blueprint-json" data-blueprint-output="json" hidden class="codebox"></pre>
               <pre id="blueprint-source" data-blueprint-output="source" hidden class="codebox"></pre>
+              <pre id="blueprint-python" data-blueprint-output="python" hidden class="codebox"></pre>
               <pre id="blueprint-tests" data-blueprint-output="tests" hidden class="codebox"></pre>
-              <div class="flow-toolbar-actions"><button id="blueprint-export-code" type="button" class="btn secondary">↓ JavaScript</button><button id="blueprint-export-tests" type="button" class="btn secondary">↓ Test file</button><button id="blueprint-compose" type="button" class="btn secondary">Open in Composer</button></div>
+              <div class="flow-toolbar-actions"><button id="blueprint-export-code" type="button" class="btn secondary">↓ JavaScript</button><button id="blueprint-export-python" type="button" class="btn secondary">↓ Python</button><button id="blueprint-export-tests" type="button" class="btn secondary">↓ Test file</button><button id="blueprint-compose" type="button" class="btn secondary">Open in Composer</button></div>
               <p class="muted">Download all three artifacts into the same folder to run the generated Node.js test. Function creation is deterministic; arbitrary AI-generated code and automatic publishing are not yet enabled.</p>
             </div>
           </div>
+        </section>
+        <section id="panel-python" class="panel">
+          <div class="panel-header"><div><h3>Python Function Discovery <span class="tag">New · v0.5</span></h3><p>Explore an allowlisted snapshot of Python callables, signatures, and brief documentation. These entries are discovery candidates, not installed AUDK applets.</p></div></div>
+          <div class="notice-banner"><strong>Safe discovery.</strong> Python packages are inspected locally by <code>tools/python_discover.py</code> and exported as a read-only catalog. This browser does not import modules, execute Python, or install software. Review a candidate before turning it into a runnable applet.</div>
+          <div class="flow-toolbar"><label>Find a Python function<input id="python-search" type="search" placeholder="e.g. itertools, sqrt, sum" maxlength="80"></label><label>Module<select id="python-module"><option value="">All modules</option></select></label></div>
+          <p id="python-discovery-status" class="muted">Loading catalog…</p><p id="python-discovery-count" class="muted"></p>
+          <div id="python-results" class="python-results"></div>
+          <p class="muted">To refresh the snapshot locally: <code>python tools/python_discover.py --output catalog/python-standard-library.json</code>. Discovery does not imply safe remote execution or supported wizard parameters.</p>
         </section>
         <section id="panel-windows" class="panel">
           <div class="panel-header"><div><h3>Windows HTA Companion Utilities <span class="tag">New · v0.3</span></h3><p>Download small standalone Windows configuration wizards. They create AUDK-compatible JSON that you can copy into the main studio.</p></div></div>
@@ -145,5 +157,6 @@
   <script type="module" src="./composer-ui.js"></script>
   <script type="module" src="./factory-ui.js"></script>
   <script type="module" src="./blueprint-ui.js"></script>
+  <script type="module" src="./python-discovery-ui.js"></script>
 </body>
 </html>

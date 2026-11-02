@@ -23,3 +23,8 @@
 .tab:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
 [hidden]{display:none!important}
 @media(max-width:710px){.sidebar{gap:2px}.sidebar .side-link{display:flex;padding:8px 10px}.sidebar .side-label{display:none}.sidebar .library-list{display:none}.sidebar-foot{display:none}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.sidebar .brand{grid-column:1/-1}.side-link{font-size:11px}}
+
+/* Python Explorer, v0.5 */
+.python-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:12px;max-height:640px;overflow:auto;margin-top:16px;padding-right:6px}
+.python-entry{padding:15px;border:1px solid var(--border,#d4dce4);border-radius:12px;background:var(--card,#fff);overflow-wrap:anywhere}
+.python-entry strong,.python-entry code{display:block;margin-bottom:8px}.python-entry code{font-size:12px;white-space:pre-wrap}.python-entry p{font-size:13px;line-height:1.4}

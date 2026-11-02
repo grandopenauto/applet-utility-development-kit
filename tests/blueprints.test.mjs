@@ -11,7 +11,7 @@ test('every blueprint generates executable manifest, code and matching test fixt
  for(const definition of FUNCTION_BLUEPRINTS){
   const result=createFunctionBlueprint({...base,type:definition.id});
   validateEntry(result.manifest);
-  assert.equal(result.manifest.version,'0.4.0');
+  assert.equal(result.manifest.version,'0.5.0');
   assert.match(result.code,/export function runApplet/);
   assert.match(result.testSource,/assert\.deepEqual/);
   const rows=runInNewContext(result.code.replace('export function','function')+'\nrunApplet()');
