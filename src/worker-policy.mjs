@@ -49,7 +49,7 @@ export async function verifySourceLock({home=HOME,manifest='policy/worker-source
   const bytes=await readFile(join(root,...record.path.split('/')));
   if(sha(bytes)!==record.sha256)throw Error('Worker source integrity mismatch: '+record.path);
  }
- for(const path of ['src/build-service.mjs','src/universal-wizard.mjs','src/curated.mjs','src/assembly-line.mjs','catalog/assembly-plan.json']){
+ for(const path of ['src/build-service.mjs','src/build-evidence.mjs','src/universal-wizard.mjs','src/curated.mjs','src/assembly-line.mjs','catalog/assembly-plan.json']){
   if(!names.has(path))throw Error('Required worker source file not locked: '+path);
  }
  return {verifiedFiles:names.size,sourceIntegrity:'pass'};

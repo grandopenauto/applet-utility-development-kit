@@ -3,7 +3,11 @@
   "files": [
     {
       "path": "src/build-service.mjs",
-      "sha256": "ce1696c72c22069f0b1b7e84881e3bd14ac86e5e62f47f5a953f672ad2cef900"
+      "sha256": "f91f10c6075eb9fce78dc698fea9520ed955658d909575d4e82b260fcc0c6794"
+    },
+    {
+      "path": "src/build-evidence.mjs",
+      "sha256": "cbd34a571cef99ec8c2b73e8351d85de1d79471e2f2227178b367a1898a3b26c"
     },
     {
       "path": "src/universal-wizard.mjs",
@@ -19,7 +23,7 @@
     },
     {
       "path": "src/worker-policy.mjs",
-      "sha256": "457a727465057b698d7a063568733862729ef82ff406f403d43055a51ef098ad"
+      "sha256": "12993bafe44898ecfcf0a40349dc1e34b2cd1c0af886eb9c6d044a31b53d4617"
     },
     {
       "path": "catalog/assembly-plan.json",

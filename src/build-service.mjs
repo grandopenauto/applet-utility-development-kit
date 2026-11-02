@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 import {UNIVERSAL_RECIPES,buildUniversalCandidate} from './universal-wizard.mjs';
 import {buildCuratedEntry} from './curated.mjs';
 import {candidateSpecification,validateAssemblyPlan} from './assembly-line.mjs';
+import {expectedBuildFiles,makeBuildEvidence,readAssemblyPlan,evidenceDigest,evidenceText} from './build-evidence.mjs';
 
 export const BUILD_SERVICE_SCHEMA='audk.private-build.v1';
 const recipes=new Map(UNIVERSAL_RECIPES.map(r=>[r.id,r]));
@@ -82,22 +83,12 @@ export async function runQueuedBuildJobs(root,{limit=3,python='python'}={}){
   job={...job,state:'running',updatedAt:stamp()};await saveAtomic(join(path,'job.json'),job);
   try{
    const artifacts=[];
-   if(job.mode==='specification'){
-    const plan=JSON.parse(await readFile(new URL('../catalog/assembly-plan.json',import.meta.url),'utf8'));
-    const spec=recipes.has(job.functionId)?{
-     schema:'audk.applet-spec.v1',functionId:job.functionId,stage:'reviewed-recipe',reviewStatus:'pending',runtimeEnabled:false,publishEnabled:false
-    }:candidateSpecification(plan,job.functionId);
-    const file='candidate_specification.json';await writeFile(join(path,file),json(spec),{flag:'wx',mode:0o600});artifacts.push(file);
-   }else{
-    const recipe=recipes.get(job.functionId);
-    if(!recipe)throw Error('Reviewed recipe no longer installed');
+   const plan=await readAssemblyPlan();
+   const expected=expectedBuildFiles(job,plan);
+   for(const [file,content] of expected){await writeFile(join(path,file),content,{flag:'wx',mode:0o600});artifacts.push(file)}
+   if(job.mode==='reviewed-build'){
     const compiled=buildUniversalCandidate(buildCuratedEntry(job.functionId).config);
     const slug=job.functionId.replace('.','-')+'_applet';
-    for(const [file,content] of [
-     [slug+'.mjs',compiled.javaScript],[slug+'.py',compiled.python],
-     [slug+'.manifest.json',json({...compiled.manifest,published:false,reviewRequired:true})],
-     [slug+'.test.mjs',compiled.testSource.replace(`'./${compiled.manifest.id}.mjs'`,`'./${slug}.mjs'`)]
-    ]){await writeFile(join(path,file),content,{flag:'wx',mode:0o600});artifacts.push(file)}
     // Execute only existing, explicitly reviewed, bounded recipes. This is NOT a sandbox for user code.
     const js=spawnSync(process.execPath,['--check',join(path,slug+'.mjs')],{cwd:path,timeout:4000,maxBuffer:16384,encoding:'utf8'});
     if(js.status!==0||js.error)throw Error('JavaScript syntax validation failed');
@@ -111,10 +102,39 @@ export async function runQueuedBuildJobs(root,{limit=3,python='python'}={}){
     if(test.status!==0||test.error)throw Error('Generated JavaScript test failed');
    }
    const report=[];
-   for(const f of artifacts){const bytes=await readFile(join(path,f));report.push({name:f,sha256:digest(bytes),bytes:bytes.length})}
+   const actual=new Map();
+   for(const f of artifacts){const bytes=await readFile(join(path,f));report.push({name:f,sha256:digest(bytes),bytes:bytes.length});actual.set(f,bytes)}
    job={...job,state:'completed',artifacts:report,updatedAt:stamp(),validation:job.mode==='reviewed-build'?'js-syntax,node-test,python-example':'metadata-only'};
+   // Evidence is written only after execution checks pass and byte-for-byte reconstruction matches.
+   const evidence=makeBuildEvidence(job,actual,plan);
+   const receipt=evidenceText(evidence);
+   await writeFile(join(path,'evidence.json'),receipt,{flag:'wx',mode:0o600});
+   job={...job,evidence:{schema:evidence.schema,file:'evidence.json',sha256:evidenceDigest(Buffer.from(receipt,'utf8'))}};
   }catch(e){job={...job,state:'failed',updatedAt:stamp(),failureCode:'BUILD_VALIDATION_FAILED',error:String(e.message).slice(0,180)}}
   await saveAtomic(join(path,'job.json'),job);results.push(job);
  }
  return results;
+}
+
+/** Re-derive every artifact from the trusted recipe and verify persisted evidence. */
+export async function verifyBuildJob(root,id){
+ const job=await readBuildJob(root,id);
+ if(job.state!=='completed'||job.publication!=='disabled'||job.reviewRequired!==true)throw Error('Only completed unpublished jobs can be verified');
+ if(job.evidence?.file!=='evidence.json'||job.evidence.schema!=='audk.build-evidence.v1')throw Error('Build evidence missing or unsupported');
+ const dir=directory(root,id);
+ const raw=await readFile(join(dir,'evidence.json'));
+ if(digest(raw)!==job.evidence.sha256)throw Error('Build evidence checksum mismatch');
+ const evidence=JSON.parse(raw.toString('utf8'));
+ const actual=new Map();
+ for(const record of job.artifacts){
+  if(!/^[A-Za-z0-9_.-]+$/.test(record.name)||actual.has(record.name))throw Error('Unsafe or duplicate artifact name');
+  const bytes=await readFile(join(dir,record.name));
+  if(bytes.length!==record.bytes||digest(bytes)!==record.sha256)throw Error('Stored artifact checksum mismatch: '+record.name);
+  actual.set(record.name,bytes);
+ }
+ const plan=await readAssemblyPlan();
+ const regenerated=makeBuildEvidence(job,actual,plan);
+ if(evidenceText(regenerated)!==raw.toString('utf8'))throw Error('Stored evidence disagrees with trusted recipe');
+ if(JSON.stringify(job.artifacts)!==JSON.stringify(regenerated.artifacts))throw Error('Job artifact record disagrees with evidence');
+ return {jobId:id,verified:true,reproducible:true,artifacts:actual.size,sourceFingerprint:regenerated.sourceFingerprint,publication:'disabled',signed:false};
 }

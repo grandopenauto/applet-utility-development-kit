@@ -33,7 +33,7 @@ test('worker roots must be distinct and cannot overlap',()=>{
  assert.throws(()=>requireWorkerLocation({source:repo,storage:'not-absolute'}),/absolute/);
 });
 test('pinned worker sources check and tampered files fail closed',async()=>{
- const good=await verifySourceLock();assert.equal(good.verifiedFiles,7);
+ const good=await verifySourceLock();assert.equal(good.verifiedFiles,8);
  const root=await mkdtemp(join(tmpdir(),'audk-lock-fixture-'));
  const orig=JSON.parse(await readFile(new URL('../policy/worker-source-lock.json',import.meta.url),'utf8'));
  for(const f of orig.files){
@@ -43,7 +43,7 @@ test('pinned worker sources check and tampered files fail closed',async()=>{
  }
  await mkdir(join(root,'policy'),{recursive:true});
  await writeFile(join(root,'policy','worker-source-lock.json'),JSON.stringify(orig));
- assert.equal((await verifySourceLock({home:root})).verifiedFiles,7);
+ assert.equal((await verifySourceLock({home:root})).verifiedFiles,8);
  await writeFile(join(root,'src','curated.mjs'),'// modified');
  await assert.rejects(()=>verifySourceLock({home:root}),/integrity mismatch/);
 });

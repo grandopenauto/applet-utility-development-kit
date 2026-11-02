@@ -281,3 +281,7 @@ A separate Windows-only, explicit operator worker rejects elevated or unknown id
 ### v1.4.1 CI portability correction
 
 Windows and Linux use portable temporary paths. Source text and JSON line endings are pinned to LF. The source lock now uses the SHA-256 of the repository's actual universal-wizard implementation. This patch does not deploy or activate any worker.
+
+## AUDK v1.5 — Reproducible build evidence
+
+The private reviewed build worker now saves a separate `evidence.json` recording checksums and recipe fingerprints. Operators can run `npm run build:verify -- <absolute-job-root> <job-id>` to regenerate the expected output from trusted first-party recipes and detect altered artifacts, including rewritten stored hashes. See `docs/BUILD_EVIDENCE.md`. This is reproducibility evidence, not a signed attestation, and does not authorize public job execution or automatic publication.
