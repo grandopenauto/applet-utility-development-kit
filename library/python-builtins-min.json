@@ -1,0 +1,28 @@
+{
+  "id": "python-builtins-min",
+  "kind": "curated-function",
+  "version": "1.2.0",
+  "name": "Minimum value utility",
+  "description": "Find the smallest numeric value in a nonempty list",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-builtins-min",
+    "name": "Minimum value utility",
+    "description": "Find the smallest numeric value in a nonempty list",
+    "functionId": "builtins.min",
+    "arguments": {
+      "numbers": [
+        5,
+        -2,
+        8,
+        1
+      ]
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

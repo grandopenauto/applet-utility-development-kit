@@ -1,3 +1,4 @@
+import {validateAssemblyPlan,candidateSpecification} from './assembly-line.mjs';
 import {readFile} from 'node:fs/promises';
 import {validateExpansionQueue} from './expansion.mjs';
 import { executeMacro, generateJavaScript, checkMacro, validateMacro } from './engine.mjs';
@@ -11,7 +12,12 @@ import {UNIVERSAL_RECIPES,buildUniversalCandidate} from './universal-wizard.mjs'
 import {createReviewPacket,verifyReviewPacket,preparePromotionProposal} from './review.mjs';
 
 export async function apiResponse(method,pathname,body,query={}) {
-  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'1.0.0',mode:'local-first'}};
+  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'1.2.0',mode:'local-first'}};
+  if(method==='GET'&&pathname==='/api/assembly/plan'){
+    const plan=JSON.parse(await readFile(new URL('../catalog/assembly-plan.json',import.meta.url),'utf8'));validateAssemblyPlan(plan);
+    if(query.id)return {status:200,data:{readOnly:true,specification:candidateSpecification(plan,String(query.id))}};
+    return {status:200,data:{readOnly:true,coverage:plan.coverage,policy:plan.policy}};
+  }
   if (method==='GET' && pathname==='/api/expansion/queue') {
     const data=JSON.parse(await readFile(new URL('../catalog/expansion-queue.json',import.meta.url),'utf8'));
     validateExpansionQueue(data);

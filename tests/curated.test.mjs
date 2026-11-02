@@ -8,11 +8,11 @@ import {loadRegistry,validateEntry} from '../src/registry.mjs';
 import {apiResponse} from '../src/api.mjs';
 const library=new URL('../library/',import.meta.url);
 const copy=x=>JSON.parse(JSON.stringify(x));
-test('all eighteen first-party presets are valid, pinned and executable',async()=>{
+test('all twenty-four first-party presets are valid, pinned and executable',async()=>{
  const all=await loadRegistry(),curated=all.filter(e=>e.kind==='curated-function');
- assert.equal(CURATED_FUNCTIONS.length,18);
- assert.equal(curated.length,18);
- assert.equal(all.length,22);
+ assert.equal(CURATED_FUNCTIONS.length,24);
+ assert.equal(curated.length,24);
+ assert.equal(all.length,28);
  for(const f of CURATED_FUNCTIONS){
   const expected=buildCuratedEntry(f),found=curated.find(e=>e.id===expected.id);
   assert.deepEqual(found,expected);
@@ -35,14 +35,14 @@ test('GitHub Pages index exactly mirrors the public registry and excludes its ow
  assert.equal(manifest.schema,'audk.library-index.v1');
  const actual=(await readdir(library)).filter(n=>n.endsWith('.json')&&n!=='index.json').sort();
  assert.deepEqual(manifest.files,actual);
- assert.equal(actual.length,22);
+ assert.equal(actual.length,28);
  assert.equal(new Set(actual).size,actual.length);
 });
 test('Universal Wizard contains twenty-four allowlisted bounded recipes and registry API exposes all twenty-two entries',async()=>{
  assert.equal(UNIVERSAL_RECIPES.length,24);
  const response=await apiResponse('GET','/api/applets');
  assert.equal(response.status,200);
- assert.equal(response.data.applets.length,22);
+ assert.equal(response.data.applets.length,28);
  const js=await readFile(new URL('../pages-app.js',import.meta.url),'utf8');
  const wizard=await readFile(new URL('../universal-ui.js',import.meta.url),'utf8');
  assert.match(js,/library\/index\.json/);

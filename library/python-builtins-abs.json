@@ -1,0 +1,23 @@
+{
+  "id": "python-builtins-abs",
+  "kind": "curated-function",
+  "version": "1.2.0",
+  "name": "Absolute value utility",
+  "description": "Magnitude of a finite numeric input",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-builtins-abs",
+    "name": "Absolute value utility",
+    "description": "Magnitude of a finite numeric input",
+    "functionId": "builtins.abs",
+    "arguments": {
+      "value": -18
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

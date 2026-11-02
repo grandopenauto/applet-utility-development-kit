@@ -1,0 +1,23 @@
+{
+  "id": "python-math-isqrt",
+  "kind": "curated-function",
+  "version": "1.2.0",
+  "name": "Integer square root utility",
+  "description": "Largest integer whose square is no greater than n",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-isqrt",
+    "name": "Integer square root utility",
+    "description": "Largest integer whose square is no greater than n",
+    "functionId": "math.isqrt",
+    "arguments": {
+      "value": 125
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

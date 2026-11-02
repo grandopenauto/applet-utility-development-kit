@@ -8,12 +8,12 @@ import {apiResponse} from '../src/api.mjs';
 const entries=await loadRegistry();
 const discovery=JSON.parse(await readFile(new URL('../catalog/python-standard-library.json',import.meta.url)));
 test('v0.9 catalog enumerates only published manifests and categories',()=>{
- assert.equal(entries.length,22);
- assert.equal(filterCatalog(entries).length,22);
+ assert.equal(entries.length,28);
+ assert.equal(filterCatalog(entries).length,28);
  assert.ok(CATEGORIES.includes(classifyApplet(entries.find(x=>x.id==='python-math-sqrt'))));
- assert.equal(filterCatalog(entries,{category:'Mathematics'}).length,12);
+ assert.equal(filterCatalog(entries,{category:'Mathematics'}).length,16);
  assert.deepEqual(filterCatalog(entries,{search:'fACTOriAL'}).map(r=>r.id),['python-math-factorial']);
- assert.equal(filterCatalog(entries,{kind:'curated-function'}).length,18);
+ assert.equal(filterCatalog(entries,{kind:'curated-function'}).length,24);
  assert.equal(filterCatalog(entries,{kind:'pipeline'}).length,2);
  assert.throws(()=>filterCatalog(entries,{category:'Admin'}),/Unknown category/);
 });
@@ -42,8 +42,8 @@ test('Python discovery exports metadata-only intake and does not confuse discove
 test('v0.9 local library search API uses validated catalog and filters',async()=>{
  const res=await apiResponse('GET','/api/library/search',null,{search:'sqrt',category:'Mathematics'});
  assert.equal(res.status,200);
- assert.deepEqual(res.data.applets.map(x=>x.id),['python-math-sqrt']);
- assert.equal(res.data.applets[0].functionId,'math.sqrt');
+ assert.deepEqual(res.data.applets.map(x=>x.id),['python-math-isqrt','python-math-sqrt']);
+ assert.equal(res.data.applets[1].functionId,'math.sqrt');
 });
 test('browser and local server include the v0.9 modules and accessible controls',async()=>{
  const html=await readFile(new URL('../index.html',import.meta.url),'utf8');

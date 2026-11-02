@@ -1,0 +1,23 @@
+{
+  "id": "python-math-ceil",
+  "kind": "curated-function",
+  "version": "1.2.0",
+  "name": "Round up utility",
+  "description": "Round a finite number toward positive infinity",
+  "config": {
+    "schema": "audk.universal.v1",
+    "id": "python-math-ceil",
+    "name": "Round up utility",
+    "description": "Round a finite number toward positive infinity",
+    "functionId": "math.ceil",
+    "arguments": {
+      "value": -2.4
+    }
+  },
+  "verification": {
+    "schema": "audk.curated.v1",
+    "status": "automated-cross-language-tests",
+    "provenance": "AUDK first-party reviewed recipe",
+    "reviewNote": "Source and numerical behavior tested in CI. No external candidate is automatically published."
+  }
+}

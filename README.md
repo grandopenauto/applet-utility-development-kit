@@ -238,3 +238,11 @@ Two new CLI commands provide a deliberate offline workflow: `npm run review:prop
 **Next:** trusted maintainer PR review integration (no auto-merge), richer example coverage, cross-platform packaging, and more curated Python schemas.
 
 See [Library Discovery and Python Intake](docs/LIBRARY_DISCOVERY.md) for the v0.9 user flow, review boundaries, local search API and verification checklist.
+
+## v1.2 — Applet Assembly Line
+
+The public `#assembly` section now shows the discovered SDK-to-published-applet gap, including applet names, parameter suggestions and exportable `_applet` specifications. Run `npm run assembly:plan` to reconcile discovery records with the live registry, and `npm run assembly:build-trusted` to generate and validate portable JavaScript/Python source **only for existing first-party reviewed recipes**. These commands do not publish code or run discovered functions.
+
+Six previously reviewed functions (`math.isqrt`, `math.floor`, `math.ceil`, `builtins.abs`, `builtins.min`, `builtins.max`) are now published as curated applets. The library contains 28 manifests: 24 reviewed Python-function presets and four original macros/pipelines. The pinned discovery snapshot has 354 callable entries, with 157 implementation candidates and 173 special-review candidates. Read [Assembly Line architecture](docs/ASSEMBLY_LINE.md) for the secure production path.
+
+**VPS decision:** no always-on service needed yet. The weekly GitHub Actions workflow writes only downloadable build reports and review-only specifications; private queue workers and protected API endpoints are a future deployment choice, not a public feature of this release.

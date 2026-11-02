@@ -23,6 +23,8 @@ jobs:
       - name: Build review-only queue and compare pinned catalog
         run: |
           node scripts/build-expansion-queue.mjs --catalog /tmp/python-fresh.json --output /tmp/audk-expansion-queue.json
+          node scripts/build-trusted-applets.mjs --output /tmp/audk-compiled-reviewed --limit 24
+          node scripts/assemble-library.mjs --catalog /tmp/python-fresh.json --output /tmp/audk-assembly-plan.json --spec-dir /tmp/audk-assembly-proposals --limit 15
           node scripts/diff-python-catalog.mjs --baseline catalog/python-standard-library.json --current /tmp/python-fresh.json --output /tmp/audk-discovery-diff.json
       - name: Validate application and applet catalog
         run: |
@@ -36,6 +38,9 @@ jobs:
             /tmp/python-fresh.json
             /tmp/audk-expansion-queue.json
             /tmp/audk-discovery-diff.json
+            /tmp/audk-assembly-plan.json
+            /tmp/audk-assembly-proposals/*.json
+            /tmp/audk-compiled-reviewed/*.json
           retention-days: 30
           if-no-files-found: error
 # No write permissions, no auto-PR, no auto-merge, no installation or code execution
