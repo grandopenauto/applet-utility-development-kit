@@ -1,4 +1,15 @@
-# Applet Utility Development Kit (AUDK) — v0.8 working prototype
+# AUDK v0.9 — Applet Utility Development Kit
+
+**Live studio:** https://audk.digitalcrossdock.com  |  **Repository:** https://github.com/grandopenauto/applet-utility-development-kit
+
+## v0.9 — Library Browser and Python Intake
+
+- **Applet Library Browser:** full-text search, category/kind filtering, detailed per-applet information, curated example preview (bounded/browser-local), and direct configuration in the right wizard. The permanent registry still contains 12 applets unless separately reviewed/promoted.
+- **Python Explorer triage:** supports 14 allowlisted wizard recipes. For other discovered Python callables, exports only a **metadata-only review intake**. Intake is never executable, never installed, never published automatically.
+- **Local API:** `GET /api/library/search?search=sqrt&category=Mathematics&kind=curated-function` returns metadata from validated manifests. The GitHub Pages site does not expose an API server.
+- **QA:** Node CI tests plus an optional real Chromium browser smoke check run locally. No credentialed remote actions.
+
+# Applet Utility Development Kit (AUDK) — v0.9 working prototype
 
 **Build a function once. Configure it visually. Execute it as a macro. Export the code when needed.**
 
@@ -11,6 +22,7 @@ This is a working proof-of-concept for an **Applet Utility Development Kit (AUDK
 - `library/index.json` is a versioned static listing so the GitHub Pages library sidebar can browse all published applets without a backend. Choosing a curated preset opens its complete parameters in the Universal Wizard.
 - `npm run check` validates that the curated presets exactly match their pinned definitions; `npm test` verifies Python/JavaScript preview equivalence and negative-input limits.
 - **Important review distinction:** curated entries are first-party recipes verified by automated cross-language tests. They are not human-signed third-party proposals. New external applets continue through v0.7 review packets, proposals, CI, and GitHub pull-request review. The public site cannot publish code.
+
 
 ## New in v0.2 — Applet Composer
 
@@ -204,3 +216,5 @@ Two new CLI commands provide a deliberate offline workflow: `npm run review:prop
 **Current inventory:** Four existing published registry applets, eight allowlisted universal function recipes, 354 Python discovery records. v0.7 does **not** automatically add new published applets or authenticate reviewers.
 
 **Next:** trusted maintainer PR review integration (no auto-merge), richer example coverage, cross-platform packaging, and more curated Python schemas.
+
+See [Library Discovery and Python Intake](docs/LIBRARY_DISCOVERY.md) for the v0.9 user flow, review boundaries, local search API and verification checklist.

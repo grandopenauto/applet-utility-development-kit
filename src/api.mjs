@@ -1,5 +1,6 @@
 import { executeMacro, generateJavaScript, checkMacro, validateMacro } from './engine.mjs';
 import { loadRegistry } from './registry.mjs';
+import {filterCatalog} from './catalog-browser.mjs';
 import {runPipeline,validatePipeline,generatePipelineCode} from './pipeline.mjs';
 import {createApplet} from './factory.mjs';
 import {generatePipelinePython} from './python-export.mjs';
@@ -7,9 +8,10 @@ import {createFunctionBlueprint,FUNCTION_BLUEPRINTS} from './blueprints.mjs';
 import {UNIVERSAL_RECIPES,buildUniversalCandidate} from './universal-wizard.mjs';
 import {createReviewPacket,verifyReviewPacket,preparePromotionProposal} from './review.mjs';
 
-export async function apiResponse(method,pathname,body) {
-  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'0.8.0',mode:'local-first'}};
+export async function apiResponse(method,pathname,body,query={}) {
+  if (method==='GET' && pathname==='/api/health') return {status:200,data:{ok:true,version:'0.9.0',mode:'local-first'}};
   if (method==='GET' && pathname==='/api/applets') return {status:200,data:{applets:await loadRegistry()}};
+  if (method==='GET' && pathname==='/api/library/search') return {status:200,data:{applets:filterCatalog(await loadRegistry(),{search:query.search||'',category:query.category||'All',kind:query.kind||'All'})}};
   if (method==='POST' && pathname==='/api/validate') return {status:200,data:{valid:true,metadata:validateMacro(body)}};
   if (method==='POST' && pathname==='/api/run') return {status:200,data:executeMacro(body)};
   if (method==='POST' && pathname==='/api/code') return {status:200,data:{language:'javascript',source:generateJavaScript(body)}};

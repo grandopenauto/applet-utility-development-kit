@@ -1,10 +1,11 @@
-/** AUDK v0.4 — navigation is the single source of truth for tabs, breadcrumbs and URLs. */
+/** AUDK v0.9 — navigation is the single source of truth for tabs, breadcrumbs and URLs. */
 export const SECTIONS=Object.freeze({
  configure:{title:'Nested Loop Wizard',subtitle:'Configure and run nested loops with step-by-step tracing.',group:'Applet Studio'},
  visualize:{title:'Execution Visualization',subtitle:'Step through iterations and inspect results.',group:'Applet Studio'},
  compose:{title:'Applet Composer',subtitle:'Assemble reusable functions into executable JSON macros.',group:'Macro Runtime'},
  factory:{title:'Applet Factory',subtitle:'Build and validate reusable applet packages from templates.',group:'Applet Factory'},
  blueprints:{title:'Function Blueprint Lab',subtitle:'Configure a function, generate its wizard, and export a tested applet.',group:'Function Blueprints'},
+ library:{title:'Applet Library Browser',subtitle:'Search verified applets, inspect examples and open their configuration wizards.',group:'Applet Library'},
  universal:{title:'Universal Applet Wizard',subtitle:'Configure reviewed Python callables using generated parameter forms.',group:'Universal Wizard'},
  review:{title:'Applet Review Desk',subtitle:'Verify candidate evidence and prepare a human-reviewed promotion proposal.',group:'Review & Promotion'},
  python:{title:'Python Function Explorer',subtitle:'Explore a curated Python standard-library discovery snapshot.',group:'Python Explorer'},

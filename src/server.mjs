@@ -6,7 +6,7 @@ import {apiResponse} from './api.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const host=process.env.AUDK_HOST||'127.0.0.1',port=Number(process.env.PORT||4173);
 if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid PORT');
-const routes=new Set(['/','/index.html','/style.css','/pages-app.js','/composer-ui.js','/src/engine.mjs','/src/factory.mjs','/src/pipeline.mjs','/factory-ui.js','/navigation-ui.js','/blueprint-ui.js','/src/blueprints.mjs','/src/registry.mjs','/src/python-export.mjs','/python-discovery-ui.js','/universal-ui.js','/src/universal-wizard.mjs','/src/review.mjs','/review-ui.js','/catalog/python-standard-library.json']);
+const routes=new Set(['/','/index.html','/style.css','/pages-app.js','/library-ui.js','/src/catalog-browser.mjs','/src/python-triage.mjs','/composer-ui.js','/src/engine.mjs','/src/factory.mjs','/src/pipeline.mjs','/factory-ui.js','/navigation-ui.js','/blueprint-ui.js','/src/blueprints.mjs','/src/registry.mjs','/src/python-export.mjs','/python-discovery-ui.js','/universal-ui.js','/src/universal-wizard.mjs','/src/review.mjs','/review-ui.js','/catalog/python-standard-library.json']);
 function safeFile(path){
  if(routes.has(path))return path==='/'?'index.html':path.slice(1);
  if(/^\/(?:library|scenarios)\/[a-z0-9-]+\.json$/.test(path))return path.slice(1);
@@ -27,7 +27,7 @@ http.createServer(async(req,res)=>{
     let raw='';for await(const chunk of req){raw+=chunk.toString('utf8');if(raw.length>131072)throw Error('Payload too large')}
     input=JSON.parse(raw);
    }
-   const result=await apiResponse(req.method,path,input);
+   const result=await apiResponse(req.method,path,input,Object.fromEntries(url.searchParams));
    response(res,result.status,result.data);
   }catch(e){response(res,400,{error:e.message})}return;
  }

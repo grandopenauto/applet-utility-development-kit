@@ -134,3 +134,5 @@ wizard.addEventListener('input', () => {
     }
   }, 170);
 });
+
+window.addEventListener('audk:load-macro',event=>{try{validateMacro(event.detail);setForm(event.detail);runApplet();}catch(e){setNotice(e.message,true)}});
