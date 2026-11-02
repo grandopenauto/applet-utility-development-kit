@@ -1,6 +1,6 @@
 {
   "name": "audk",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": true,
   "description": "Applet Utility Development Kit: build, configure, inspect, test and export reusable applets and macros",
   "type": "module",
@@ -25,7 +25,8 @@
     "worker:restricted": "node scripts/run-restricted-worker.mjs",
     "worker:lock": "node scripts/create-worker-source-lock.mjs",
     "build:verify": "node scripts/verify-build-evidence.mjs",
-    "build:import-handoff": "node scripts/import-build-handoff.mjs"
+    "build:import-handoff": "node scripts/import-build-handoff.mjs",
+    "intake:serve-private": "node scripts/start-intake-gateway.mjs"
   },
   "optionalDependencies": {
     "express": "^5.1.0"
