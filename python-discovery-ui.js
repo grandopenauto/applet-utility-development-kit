@@ -1,4 +1,6 @@
 /** AUDK v0.5 read-only Python catalog browsing; entries are NOT executable applets. */
+import {UNIVERSAL_RECIPES} from './src/universal-wizard.mjs';
+const reviewed=new Set(UNIVERSAL_RECIPES.map(r=>r.id));
 const search=document.getElementById('python-search');
 const moduleSelect=document.getElementById('python-module');
 const results=document.getElementById('python-results');
@@ -17,6 +19,7 @@ function render(){
   item.append(element('strong',null,entry.module+'.'+entry.name));
   item.append(element('code',null,entry.signature));
   item.append(element('p','muted',entry.summary));
+  if(reviewed.has(entry.qualifiedName)){const button=element('button','btn secondary','Configure in Universal Wizard');button.type='button';button.addEventListener('click',()=>{location.hash='#universal';window.dispatchEvent(new CustomEvent('audk:prefill-universal',{detail:{functionId:entry.qualifiedName}}));});item.append(button);}
   results.append(item);
  }
  if(filtered.length>90)results.append(element('p','muted',`Showing first 90 of ${filtered.length}. Refine the search to narrow results.`));

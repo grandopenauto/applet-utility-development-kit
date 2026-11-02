@@ -28,3 +28,6 @@
 .python-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:12px;max-height:640px;overflow:auto;margin-top:16px;padding-right:6px}
 .python-entry{padding:15px;border:1px solid var(--border,#d4dce4);border-radius:12px;background:var(--card,#fff);overflow-wrap:anywhere}
 .python-entry strong,.python-entry code{display:block;margin-bottom:8px}.python-entry code{font-size:12px;white-space:pre-wrap}.python-entry p{font-size:13px;line-height:1.4}
+
+/* AUDK v0.6 Universal Wizard */
+#universal-status{margin:0 0 8px;font-size:12px}#universal-fields textarea{min-height:64px}#universal-fields label{min-width:0}#panel-universal .flow-output{max-height:87vh}#panel-universal .codebox{white-space:pre-wrap;overflow-wrap:anywhere;min-height:240px}

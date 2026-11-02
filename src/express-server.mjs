@@ -6,13 +6,13 @@ import {fileURLToPath} from 'node:url';
 import {apiResponse} from './api.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const app=express();app.disable('x-powered-by');app.use(express.json({limit:'128kb'}));
-for(const path of ['/api/validate','/api/run','/api/code','/api/test','/api/pipeline/validate','/api/pipeline/run','/api/pipeline/code','/api/factory/preview']){
+for(const path of ['/api/validate','/api/run','/api/code','/api/test','/api/pipeline/validate','/api/pipeline/run','/api/pipeline/code','/api/factory/preview','/api/universal/preview','/api/blueprints/preview','/api/pipeline/python']){
  app.post(path,async(req,res)=>{try{const result=await apiResponse('POST',path,req.body);res.status(result.status).json(result.data)}catch(e){res.status(400).json({error:e.message})}});
 }
-for(const path of ['/api/applets','/api/health']){
+for(const path of ['/api/applets','/api/health','/api/universal/functions','/api/blueprints']){
  app.get(path,async(_req,res)=>{try{const result=await apiResponse('GET',path);res.status(result.status).json(result.data)}catch(e){res.status(500).json({error:e.message})}});
 }
-const files=new Set(['/','/index.html','/style.css','/pages-app.js','/composer-ui.js','/src/engine.mjs','/src/pipeline.mjs','/src/factory.mjs','/factory-ui.js']);
+const files=new Set(['/','/index.html','/style.css','/pages-app.js','/composer-ui.js','/src/engine.mjs','/src/pipeline.mjs','/src/factory.mjs','/factory-ui.js','/universal-ui.js','/src/universal-wizard.mjs','/navigation-ui.js','/blueprint-ui.js','/src/blueprints.mjs','/src/registry.mjs','/src/python-export.mjs','/python-discovery-ui.js','/catalog/python-standard-library.json']);
 app.get(/^\/(?!api\/).*/,async(req,res)=>{
  const name=files.has(req.path)?(req.path==='/'?'index.html':req.path.slice(1)):
   (/^\/(?:library|scenarios)\/[a-z0-9-]+\.json$/.test(req.path)||/^\/examples\/pipelines\/[a-z0-9-]+\.json$/.test(req.path)||/^\/downloads\/hta\/audk-(?:loop-planner|slot-matrix)\.hta$/.test(req.path)?req.path.slice(1):null);

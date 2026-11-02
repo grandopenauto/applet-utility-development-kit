@@ -5,6 +5,7 @@ export const SECTIONS=Object.freeze({
  compose:{title:'Applet Composer',subtitle:'Assemble reusable functions into executable JSON macros.',group:'Macro Runtime'},
  factory:{title:'Applet Factory',subtitle:'Build and validate reusable applet packages from templates.',group:'Applet Factory'},
  blueprints:{title:'Function Blueprint Lab',subtitle:'Configure a function, generate its wizard, and export a tested applet.',group:'Function Blueprints'},
+ universal:{title:'Universal Applet Wizard',subtitle:'Configure reviewed Python callables using generated parameter forms.',group:'Universal Wizard'},
  python:{title:'Python Function Explorer',subtitle:'Explore a curated Python standard-library discovery snapshot.',group:'Python Explorer'},
  windows:{title:'Windows HTA Companions',subtitle:'Download offline Windows configuration utilities.',group:'Windows HTA Apps'},
  code:{title:'Generated JavaScript',subtitle:'Inspect source generated from your nested-loop macro.',group:'Applet Studio'},

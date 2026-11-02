@@ -15,15 +15,16 @@
       <button type="button" class="side-link" data-jump="compose">⎇ <span>Macro Runtime</span></button>
       <button type="button" class="side-link" data-jump="factory">✦ <span>Applet Factory</span></button>
       <button type="button" class="side-link" data-jump="blueprints">◇ <span>Function Blueprints</span></button>
+      <button type="button" class="side-link" data-jump="universal">⚗ <span>Universal Wizard</span></button>
       <button type="button" class="side-link" data-jump="python">🐍 <span>Python Explorer</span></button>
       <button type="button" class="side-link" data-jump="windows">▣ <span>Windows HTA Apps</span></button>
       <button type="button" class="side-link" data-jump="api">↗ <span>API Reference</span></button>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.5.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.6.0 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.5</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.6</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
         <div class="workspace-head"><div><h2 id="workspace-title">Nested Loop Wizard</h2><p id="workspace-subtitle">Configure and run nested loops with step-by-step tracing.</p></div><div class="actions" id="wizard-actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
@@ -33,6 +34,7 @@
           <button class="tab" data-tab="compose">⛓ Applet Composer</button>
           <button class="tab" data-tab="factory">✦ Applet Factory</button>
           <button class="tab" data-tab="blueprints">◇ Function Blueprints</button>
+          <button class="tab" data-tab="universal">⚗ Universal Wizard</button>
           <button class="tab" data-tab="python">🐍 Python Explorer</button>
           <button class="tab" data-tab="windows">▣ Windows HTA Apps</button>
           <button class="tab" data-tab="code">⌘ View code</button>
@@ -127,6 +129,28 @@
             </div>
           </div>
         </section>
+        <section id="panel-universal" class="panel">
+          <div class="panel-header"><div><h3>Universal Applet Wizard <span class="tag">New · v0.6</span></h3><p>Schema-generated parameter controls for reviewed Python functions. Validate and preview locally, then export reusable JavaScript, Python, a manifest, and tests.</p></div></div>
+          <div class="notice-banner"><strong>Review gate:</strong> Discovered functions are not automatically trusted. These eight pure functions have explicit schemas and bounded inputs. Files are exported as candidates for human review; they are not automatically installed or published.</div>
+          <div class="flow-grid">
+            <form id="universal-form" class="flow-editor" autocomplete="off">
+              <div class="flow-group"><div class="flow-group-title"><strong>01 · Choose a reviewed function</strong><span>Eight safe recipes</span></div><label>Python callable<select id="universal-function"></select></label><p class="muted" id="universal-description"></p><label>Try an example<select id="universal-example"></select></label></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>02 · Applet identity</strong><span>Candidate manifest</span></div><div class="input-grid two"><label>Applet ID<input id="universal-id" maxlength="50" required></label><label>Display name<input id="universal-name" maxlength="80" required></label></div><label>Description<input id="universal-desc" maxlength="300" required></label></div>
+              <div class="flow-group"><div class="flow-group-title"><strong>03 · Function parameters</strong><span>Controls generated from schemas</span></div><div id="universal-fields" class="input-grid two"></div></div>
+              <button class="btn primary" type="submit">✓ Validate & preview candidate</button>
+              <p class="flow-safety">Pure computation only · bounded values · no arbitrary Python calls, eval, OS permissions, or remote publishing.</p>
+            </form>
+            <div class="flow-output"><div id="universal-status" role="status" aria-live="polite" class="notice">Choose a function to begin.</div>
+              <div class="flow-view-tabs"><button type="button" class="active" data-universal-view="preview">Result</button><button type="button" data-universal-view="manifest">Manifest</button><button type="button" data-universal-view="javascript">JavaScript</button><button type="button" data-universal-view="python">Python</button><button type="button" data-universal-view="tests">Tests</button></div>
+              <pre id="universal-preview" data-universal-output="preview" class="codebox">Validate a function to see its result.</pre>
+              <pre id="universal-manifest" data-universal-output="manifest" class="codebox" hidden></pre>
+              <pre id="universal-javascript" data-universal-output="javascript" class="codebox" hidden></pre>
+              <pre id="universal-python" data-universal-output="python" class="codebox" hidden></pre>
+              <pre id="universal-tests" data-universal-output="tests" class="codebox" hidden></pre>
+              <div class="flow-toolbar-actions"><button type="button" id="universal-download-manifest" class="btn secondary">↓ Manifest</button><button type="button" id="universal-download-javascript" class="btn secondary">↓ JavaScript</button><button type="button" id="universal-download-python" class="btn secondary">↓ Python</button><button type="button" id="universal-download-tests" class="btn secondary">↓ Tests</button></div>
+            </div>
+          </div>
+        </section>
         <section id="panel-python" class="panel">
           <div class="panel-header"><div><h3>Python Function Discovery <span class="tag">New · v0.5</span></h3><p>Explore an allowlisted snapshot of Python callables, signatures, and brief documentation. These entries are discovery candidates, not installed AUDK applets.</p></div></div>
           <div class="notice-banner"><strong>Safe discovery.</strong> Python packages are inspected locally by <code>tools/python_discover.py</code> and exported as a read-only catalog. This browser does not import modules, execute Python, or install software. Review a candidate before turning it into a runnable applet.</div>
@@ -148,7 +172,7 @@
         <section id="panel-code" class="panel"><div class="panel-header"><div><h3>Generated JavaScript</h3><p>Readable, portable code. Edit or embed it in your project.</p></div><button id="copy-code" class="btn secondary">Copy code</button></div><pre id="code-output" class="codebox">Run the applet to generate code.</pre></section>
         <section id="panel-macro" class="panel"><div class="panel-header"><div><h3>Macro configuration</h3><p>A versionable JSON description interpreted directly by the runtime.</p></div><button id="copy-macro" class="btn secondary">Copy JSON</button></div><textarea id="macro-output" class="macrobox" spellcheck="false" aria-label="Macro JSON"></textarea><div class="editor-footer"><span>Change the JSON and apply it without recompiling software.</span><button id="apply-macro" class="btn secondary">Apply JSON to wizard</button></div></section>
         <section id="panel-tests" class="panel"><div class="panel-header"><div><h3>Built-in Test Laboratory</h3><p>Validate execution bounds, output count, and branch tracing.</p></div><button id="run-tests" class="btn primary">✓ Run checks</button></div><div id="test-results" class="test-results muted">No tests run yet.</div></section>
-        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>POST /api/factory/preview</code><span>Generate and validate an applet manifest without publishing it</span></div><div class="endpoint"><code>GET /api/blueprints</code><span>Read available schema-driven functions</span></div><div class="endpoint"><code>POST /api/blueprints/preview</code><span>Generate, test, and preview an applet blueprint</span></div><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
+        <section id="panel-api" class="panel"><h3>API-first by design</h3><p>Applets are reusable across dashboards, scripts, and client applications. This GitHub Pages demonstration executes only in your browser. Use the local Node server for the REST API.</p><div class="endpoint"><code>POST /api/factory/preview</code><span>Generate and validate an applet manifest without publishing it</span></div><div class="endpoint"><code>GET /api/blueprints</code><span>Read available schema-driven functions</span></div><div class="endpoint"><code>POST /api/blueprints/preview</code><span>Generate, test, and preview an applet blueprint</span></div><div class="endpoint"><code>GET /api/universal/functions</code><span>List reviewed Python callable recipes and parameter schemas</span></div><div class="endpoint"><code>POST /api/universal/preview</code><span>Validate and preview a review-ready applet candidate</span></div><div class="endpoint"><code>GET /api/applets</code><span>List versioned applets</span></div><div class="endpoint"><code>POST /api/validate</code><span>Validate macro configuration</span></div><div class="endpoint"><code>POST /api/run</code><span>Execute a declarative macro</span></div><div class="endpoint"><code>POST /api/code</code><span>Generate JavaScript source</span></div><div class="endpoint"><code>POST /api/test</code><span>Run built-in self-checks</span></div><p class="muted">The public demo does not expose live HTTP API endpoints. Run <code>npm start</code> locally for <code>/api/*</code> routes. No arbitrary operating-system commands or remote code execution are enabled.</p></section>
       </section>
       <footer>AUDK · Browser demo · Powered by reusable declarative applets · <a href="https://digitalcrossdock.com">Digital CrossDock</a></footer>
     </main>
@@ -158,5 +182,6 @@
   <script type="module" src="./factory-ui.js"></script>
   <script type="module" src="./blueprint-ui.js"></script>
   <script type="module" src="./python-discovery-ui.js"></script>
+  <script type="module" src="./universal-ui.js"></script>
 </body>
 </html>

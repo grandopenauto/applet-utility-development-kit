@@ -1,4 +1,4 @@
-# Applet Utility Development Kit (AUDK) — v0.5 working prototype
+# Applet Utility Development Kit (AUDK) — v0.6 working prototype
 
 **Build a function once. Configure it visually. Execute it as a macro. Export the code when needed.**
 
@@ -33,7 +33,7 @@ New local-only API: `POST /api/factory/preview` returns `{entry,preview,code}` f
 
 ## What works today
 
-- Interactive responsive browser studio with nine tabs: **Configure, Visualize, Applet Composer, Applet Factory, Windows HTA Apps, View Code, Macro JSON, Test Lab, API**.
+- Interactive responsive browser studio with dedicated workspaces including: **Configure, Visualize, Applet Composer, Applet Factory, Windows HTA Apps, View Code, Macro JSON, Test Lab, API**.
 - A nested `for`-loop wizard: variable names, start/end/step, inner/outer loops, operations, optional `switch` branch based on sum parity.
 - Interactive execution tracing and stepping forward/backward through each iteration.
 - Save a macro as JSON, edit its JSON, load it into the wizard, and execute **without recompiling**.
@@ -170,3 +170,15 @@ The local development API also offers `GET /api/blueprints` and `POST /api/bluep
 3. Implement a sandboxed Python execution runner *locally*, with resource limits and opt-in permissions.
 4. Create comparative JavaScript/Python test matrices; support multiple Python versions and control-function (loop/branch) exports.
 5. Introduce capability-scoped file watchers and optional native/HTA diagnostic extensions; never expose privileged operations directly on the public Pages site.
+
+## New in v0.6 — Universal Applet Wizard (review-gated)
+
+**Live browser route:** `#universal`. This release adds eight curated, pure Python-compatible callable recipes with typed, bounded parameter schemas: `math.sqrt`, `math.factorial`, `math.gcd`, `statistics.mean`, `statistics.median`, `builtins.sum`, `builtins.sorted` (numeric lists), and `builtins.len` (Unicode text). Users can choose a sample, edit auto-generated controls, preview the result locally, and download **candidate manifest JSON, runnable JavaScript `.mjs`, runnable Python `.py`, and a Node.js test fixture**. The JSON manifest uses `audk.universal.v1` and explicitly declares `candidate-review-required`, **not** an installed applet.
+
+The read-only Python Explorer now offers **Configure in Universal Wizard** on these reviewed items. Other discovered callables remain read-only and cannot be invoked. The public Github Pages app remains static and browser-only: no Python execution, `eval`, remote code execution, shell, filesystem access, privileged APIs, or automatic publication.
+
+Local-only API additions: `GET /api/universal/functions` and `POST /api/universal/preview`, compatible with both built-in Node HTTP and optional Express server. Guardrails include allowlisted function names, type checking, finite numeric bounds, JSON array length limits, safe candidate IDs, and explicit review status. The generated test `.test.mjs` should be saved next to the generated `.mjs` and run with `node --test <id>.test.mjs`; run Python locally with `python <id>.py`.
+
+The CI suite now covers curated example cases across JavaScript and Python, candidate validation, API contracts and navigation. The Python discovery snapshot still contains **354 discovered callables**, and the committed `library/` still contains **four published manifests**: these counts must not be combined. The eight recipes are *reviewed function templates*, not eight automatically installed library entries.
+
+Next: add candidate review workflow with versioning and provenance, optional whitelisted output composition, more curated Python functions, and capability-scoped external integrations. Never auto-merge generated code.
