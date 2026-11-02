@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,readFile,readdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {request} from 'node:http';
 import {assertDataRoot,validateBuildRequest,submitBuildJob,readBuildJob,runQueuedBuildJobs} from '../src/build-service.mjs';
 import {startPrivateBuildApi,authorize} from '../src/private-build-api.mjs';
@@ -10,7 +11,7 @@ const plan=JSON.parse(await readFile(new URL('../catalog/assembly-plan.json',imp
 const temp=()=>mkdtemp(join(tmpdir(),'audk-private-build-'));
 const key='test-idempotency-key-0001';
 test('build service refuses published checkout and arbitrary executable candidates',async()=>{
- assert.throws(()=>assertDataRoot(new URL('../library/',import.meta.url).pathname),/public AUDK checkout/);
+ assert.throws(()=>assertDataRoot(fileURLToPath(new URL('../library/',import.meta.url))),/public AUDK checkout/);
  assert.throws(()=>validateBuildRequest({functionId:'math.tan',mode:'reviewed-build',idempotencyKey:key},plan),/Execution denied/);
  assert.throws(()=>validateBuildRequest({functionId:'builtins.eval',mode:'reviewed-build',idempotencyKey:key},plan),/Execution denied/);
  assert.throws(()=>validateBuildRequest({functionId:'math.sqrt',mode:'shell',idempotencyKey:key},plan),/Unsupported/);

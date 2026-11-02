@@ -29,7 +29,7 @@ test('generated blueprint tests run using downloaded source files', async()=>{
   await writeFile(join(folder,result.manifest.id+'.mjs'),result.code);
   await writeFile(join(folder,result.manifest.id+'.test.mjs'),result.testSource);
   const {NODE_TEST_CONTEXT,...cleanEnv}=process.env;
-  const output=execFileSync(process.execPath,['--test',result.manifest.id+'.test.mjs'],{cwd:folder,encoding:'utf8',env:cleanEnv});
+  const output=execFileSync(process.execPath,['--test','--test-reporter=tap',result.manifest.id+'.test.mjs'],{cwd:folder,encoding:'utf8',env:cleanEnv});
   assert.match(output,/# pass 1/);
  }finally{await rm(folder,{recursive:true,force:true});}
 });

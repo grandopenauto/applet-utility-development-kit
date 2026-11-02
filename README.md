@@ -269,3 +269,7 @@ npm run build:work-once
 Job status: `GET /v1/jobs/<jobId>` with the same bearer token. Completed artifacts are stored in `$AUDK_BUILD_DATA_DIR/jobs/<jobId>/` for *operator-only local review*, with SHA-256 checksums in `job.json`. The private API does not serve source artifacts. The worker is invoked deliberately (no scheduled task or daemon installed by AUDK). Do not expose this port through IIS, reverse proxies, firewall rules, tunnels, or public GitHub Pages scripts.
 
 **Windows VPS staging proposal:** `C:\HDP\AUDK` for separately reviewed, non-public experiments, with a dedicated low-privilege identity and ACLs before any service is installed. No public API routing is part of v1.3. See `docs/PRIVATE_BUILD_SERVICE.md`.
+
+## Windows test compatibility (v1.3.1)
+
+Cross-platform test harness fixes: generated Node test subprocesses explicitly use the TAP reporter, and repository path checks use `fileURLToPath()` rather than URL pathname strings. No public build endpoint, unattended scheduling, or arbitrary-code execution was enabled.

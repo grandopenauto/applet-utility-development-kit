@@ -37,7 +37,7 @@ test('generated JavaScript and test files run together in Node',async()=>{
   await writeFile(join(dir,'review-candidate.mjs'),candidate.javaScript);
   await writeFile(join(dir,'review-candidate.test.mjs'),candidate.testSource);
   const {NODE_TEST_CONTEXT,...env}=process.env;
-  const run=spawnSync(process.execPath,['--test','review-candidate.test.mjs'],{cwd:dir,encoding:'utf8',timeout:7000,env});
+  const run=spawnSync(process.execPath,['--test','--test-reporter=tap','review-candidate.test.mjs'],{cwd:dir,encoding:'utf8',timeout:7000,env});
   assert.equal(run.status,0,run.stderr);
   assert.match(run.stdout,/# pass 1/);
  }finally{await rm(dir,{recursive:true,force:true});}
