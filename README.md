@@ -1,3 +1,9 @@
+# AUDK v2.1 — SDK-to-Recipe Development Packets
+
+AUDK now turns pinned, discovered Python API metadata into deterministic, review-only recipe drafts with parsed parameter modes, sample-input proposals, exact source fingerprints and explicit missing reference results. `npm run development:recipes` is inspect-only unless `--write --output <fresh-private-path>` is explicitly specified. No candidate code runs, no recipe is automatically approved or published, and the production VPS remains unchanged. See [SDK Recipe Development](docs/SDK_RECIPE_DEVELOPMENT.md).
+
+---
+
 # AUDK Studio — Build Reusable Software Components
 
 **Build once. Configure, test, and reuse anywhere.** AUDK is the Applet Utility Development Kit, providing bounded, reusable software components, visual configuration, tested JavaScript/Python export and no-compile JSON macros.
