@@ -18,7 +18,7 @@ jobs:
           node-version: '24'
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - run: npm test
       - run: npm run check
       - run: node scripts/verify-worker-lock.mjs
@@ -37,7 +37,7 @@ jobs:
           node-version: '24'
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Execute reviewed build as disposable non-admin local Windows account
         shell: pwsh
         run: ./scripts/ci-restricted-worker-smoke.ps1

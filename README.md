@@ -304,3 +304,7 @@ The public Studio exports a versioned, metadata-only handoff (`audk.build-handof
 ## AUDK v2.0 — Automated reviewed production batches
 
 `npm run production:batch` is inspect-only by default. Select reviewed functions with `--reviewed math.sqrt,math.gcd`, optional inert proposals with `--proposals math.tan`, and explicitly stage a batch only using `--build --output <new-private-directory>`. The production engine generates tested JavaScript/Python source, reproducibility evidence, per-artifact SHA-256 receipts, an inert proposal queue, and a human-review checklist. The command never publishes, opens pull requests, or executes unreviewed SDK code. See [Production pipeline](docs/PRODUCTION_PIPELINE.md). GitHub CI also now includes the eight previously local-only v1.9 gateway regression tests.
+
+## v2.2 — Sealed CPython reference fixtures
+
+The operator-only `npm run reference:python` previews a proposed Python reference capture without executing Python. `--capture --output <new-private-absolute-directory>` records bounded CPython 3.13 math results and errors for `math.tan`, `math.acos`, `math.asin`, `math.acosh`, `math.atanh`, or `math.erf`. See [Python Reference Oracle](docs/PYTHON_REFERENCE_ORACLE.md). The oracle accepts **no arbitrary user-supplied code or input cases**. Results are evidence for human review, not approved recipes. The library remains unchanged, and no VPS worker or public execution endpoint is deployed.
