@@ -31,3 +31,12 @@
 
 /* AUDK v0.6 Universal Wizard */
 #universal-status{margin:0 0 8px;font-size:12px}#universal-fields textarea{min-height:64px}#universal-fields label{min-width:0}#panel-universal .flow-output{max-height:87vh}#panel-universal .codebox{white-space:pre-wrap;overflow-wrap:anywhere;min-height:240px}
+
+/* AUDK v0.7 — review desk */
+#panel-review .flow-output .codebox{min-height:150px;max-height:340px;white-space:pre-wrap;overflow-wrap:anywhere}
+#panel-review details{margin-top:16px;padding:8px;border:1px solid var(--border);border-radius:9px}
+#panel-review summary{font-weight:600;cursor:pointer;padding:8px}
+#panel-review .flow-group code{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.6}
+.review-check{display:flex;gap:10px;align-items:flex-start;line-height:1.5;font-size:12px}
+.review-check input{width:18px;height:18px;margin:1px 0 0;flex-shrink:0}
+#panel-review .flow-file input{display:none}

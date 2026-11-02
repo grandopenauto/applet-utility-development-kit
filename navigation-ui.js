@@ -6,6 +6,7 @@ export const SECTIONS=Object.freeze({
  factory:{title:'Applet Factory',subtitle:'Build and validate reusable applet packages from templates.',group:'Applet Factory'},
  blueprints:{title:'Function Blueprint Lab',subtitle:'Configure a function, generate its wizard, and export a tested applet.',group:'Function Blueprints'},
  universal:{title:'Universal Applet Wizard',subtitle:'Configure reviewed Python callables using generated parameter forms.',group:'Universal Wizard'},
+ review:{title:'Applet Review Desk',subtitle:'Verify candidate evidence and prepare a human-reviewed promotion proposal.',group:'Review & Promotion'},
  python:{title:'Python Function Explorer',subtitle:'Explore a curated Python standard-library discovery snapshot.',group:'Python Explorer'},
  windows:{title:'Windows HTA Companions',subtitle:'Download offline Windows configuration utilities.',group:'Windows HTA Apps'},
  code:{title:'Generated JavaScript',subtitle:'Inspect source generated from your nested-loop macro.',group:'Applet Studio'},

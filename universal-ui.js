@@ -46,11 +46,12 @@ function generate(){
  try{
   const config={schema:UNIVERSAL_SCHEMA,id:$('universal-id').value,name:$('universal-name').value,description:$('universal-desc').value,functionId:functionSelect.value,arguments:readArguments()};
   last=buildUniversalCandidate(config);
+  $('universal-send-review').disabled=false;
   setOutput('preview',JSON.stringify({function:last.manifest.functionId,result:last.result,status:last.manifest.status},null,2));
   setOutput('manifest',JSON.stringify(last.manifest,null,2));
   setOutput('javascript',last.javaScript);setOutput('python',last.python);setOutput('tests',last.testSource);
   message(`Validated ${last.manifest.functionId}. Preview ran locally. Exported code and manifest are REVIEW CANDIDATES, not published applets.`);
- }catch(error){last=null;message(error.message,true);}
+ }catch(error){last=null;$('universal-send-review').disabled=true;message(error.message,true);}
 }
 const downloads={manifest:['json','manifest'],javascript:['mjs','javaScript'],python:['py','python'],tests:['test.mjs','testSource']};
 function download(kind){
@@ -63,6 +64,10 @@ for(const r of UNIVERSAL_RECIPES){const opt=el('option',null,`${r.id} · ${r.tit
 functionSelect.addEventListener('change',()=>selectRecipe(functionSelect.value));
 $('universal-example').addEventListener('change',e=>selectExample(Number(e.target.value)));
 $('universal-form').addEventListener('submit',e=>{e.preventDefault();generate();});
+$('universal-send-review').addEventListener('click',()=>{
+ if(!last){message('Validate the function first.',true);return;}
+ const m=last.manifest;window.dispatchEvent(new CustomEvent('audk:universal-candidate',{detail:{config:{schema:m.schema,id:m.id,name:m.name,description:m.description,functionId:m.functionId,arguments:m.arguments}}}));
+});
 for(const key of Object.keys(downloads))$('universal-download-'+key).addEventListener('click',()=>download(key));
 for(const button of document.querySelectorAll('[data-universal-view]'))button.addEventListener('click',()=>{
  const view=button.dataset.universalView;

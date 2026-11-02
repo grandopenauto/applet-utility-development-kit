@@ -1,6 +1,6 @@
 {
   "name": "audk",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Applet Utility Development Kit: build, configure, inspect, test and export reusable applets and macros",
   "type": "module",
@@ -13,7 +13,9 @@
     "test": "node --test tests/*.test.mjs",
     "check": "node scripts/check-library.mjs",
     "discover:python": "python tools/python_discover.py --output catalog/python-standard-library.json",
-    "generate": "node scripts/generate-applet.mjs"
+    "generate": "node scripts/generate-applet.mjs",
+    "review:propose": "node scripts/promote-review.mjs",
+    "review:stage": "node scripts/stage-promoted-applet.mjs"
   },
   "optionalDependencies": {
     "express": "^5.1.0"

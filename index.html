@@ -16,15 +16,16 @@
       <button type="button" class="side-link" data-jump="factory">✦ <span>Applet Factory</span></button>
       <button type="button" class="side-link" data-jump="blueprints">◇ <span>Function Blueprints</span></button>
       <button type="button" class="side-link" data-jump="universal">⚗ <span>Universal Wizard</span></button>
+      <button type="button" class="side-link" data-jump="review">☑ <span>Review Desk</span></button>
       <button type="button" class="side-link" data-jump="python">🐍 <span>Python Explorer</span></button>
       <button type="button" class="side-link" data-jump="windows">▣ <span>Windows HTA Apps</span></button>
       <button type="button" class="side-link" data-jump="api">↗ <span>API Reference</span></button>
       <div class="side-label">APPLET LIBRARY</div>
       <div id="library-list" class="library-list"><div class="skeleton">Loading library…</div></div>
-      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.6.0 · Safe declarative runtime</small></div>
+      <div class="sidebar-foot"><span class="online"></span> Browser-local demo <br/><small>v0.7.0 · Safe declarative runtime</small></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.6</span></header>
+      <header class="topbar"><div class="crumb">Workspace <span>/</span> <strong id="current-location">Applet Studio / Nested Loop Wizard</strong></div><span class="tag">Interactive browser demo · v0.7</span></header>
       <section class="intro"><div class="eyebrow">BUILD · CONFIGURE · TEST · REUSE</div><h1>Build functions, not boilerplate.</h1><p>Configure a nested loop, visualize its execution, trace every branch, and export the code or reusable macro. No compilation required to run the macro.</p></section>
       <div class="notice-banner"><strong>Safe public preview.</strong> This studio runs macros inside your browser. It cannot access the server, files, or operating-system services. <a href="https://github.com/grandopenauto/applet-utility-development-kit">View source on GitHub</a>.</div><section class="workspace">
         <div class="workspace-head"><div><h2 id="workspace-title">Nested Loop Wizard</h2><p id="workspace-subtitle">Configure and run nested loops with step-by-step tracing.</p></div><div class="actions" id="wizard-actions"><button id="download" class="btn secondary">↓ Export macro</button><button id="run" class="btn primary">▶ Run applet</button></div></div>
@@ -35,6 +36,7 @@
           <button class="tab" data-tab="factory">✦ Applet Factory</button>
           <button class="tab" data-tab="blueprints">◇ Function Blueprints</button>
           <button class="tab" data-tab="universal">⚗ Universal Wizard</button>
+          <button class="tab" data-tab="review">☑ Review Desk</button>
           <button class="tab" data-tab="python">🐍 Python Explorer</button>
           <button class="tab" data-tab="windows">▣ Windows HTA Apps</button>
           <button class="tab" data-tab="code">⌘ View code</button>
@@ -147,7 +149,37 @@
               <pre id="universal-javascript" data-universal-output="javascript" class="codebox" hidden></pre>
               <pre id="universal-python" data-universal-output="python" class="codebox" hidden></pre>
               <pre id="universal-tests" data-universal-output="tests" class="codebox" hidden></pre>
-              <div class="flow-toolbar-actions"><button type="button" id="universal-download-manifest" class="btn secondary">↓ Manifest</button><button type="button" id="universal-download-javascript" class="btn secondary">↓ JavaScript</button><button type="button" id="universal-download-python" class="btn secondary">↓ Python</button><button type="button" id="universal-download-tests" class="btn secondary">↓ Tests</button></div>
+              <div class="flow-toolbar-actions"><button type="button" id="universal-download-manifest" class="btn secondary">↓ Manifest</button><button type="button" id="universal-download-javascript" class="btn secondary">↓ JavaScript</button><button type="button" id="universal-download-python" class="btn secondary">↓ Python</button><button type="button" id="universal-download-tests" class="btn secondary">↓ Tests</button><button type="button" id="universal-send-review" class="btn primary" disabled>→ Send to Review Desk</button></div>
+            </div>
+          </div>
+        </section>
+        <section id="panel-review" class="panel">
+          <div class="panel-header"><div><h3>Applet Review &amp; Promotion Desk <span class="tag">New · v0.7</span></h3><p>Generate evidence, verify packet integrity, and prepare a human-reviewed promotion proposal. No automatic library or GitHub publishing.</p></div></div>
+          <div class="notice-banner"><strong>Review boundary:</strong> A local reviewer label is NOT authenticated approval. SHA-256 detects alterations but does not prove authorship. Proposed applets still require manual source inspection, GitHub pull-request review, and passing CI before merge.</div>
+          <div class="flow-grid">
+            <div class="flow-editor">
+              <div class="flow-group"><div class="flow-group-title"><strong>01 · Candidate</strong><span>Allowlisted pure functions</span></div>
+                <label>Function<select id="review-function"></select></label>
+                <label>Candidate ID<input id="review-id" value="reviewed-sqrt-applet" maxlength="50"></label>
+                <div class="flow-toolbar-actions"><button type="button" class="btn primary" id="review-create">Create &amp; verify review packet</button><label class="btn secondary flow-file">↑ Import review JSON<input id="review-import" type="file" accept=".json,application/json" hidden></label></div>
+                <p class="flow-safety">For custom parameters, create a candidate in the Universal Wizard and choose “Send to Review Desk”.</p>
+              </div>
+              <div class="flow-group"><div class="flow-group-title"><strong>02 · Local human review</strong><span>Not an authorization credential</span></div>
+                <label>Reviewer label<input id="review-reviewer" placeholder="Your name or review team" maxlength="80"></label>
+                <label>Review notes<textarea id="review-note" class="flow-mini-textarea" placeholder="Describe what source and evidence you inspected..." maxlength="1000"></textarea></label>
+                <label class="review-check"><input id="review-confirm" type="checkbox"> I inspected the generated code and evidence. I understand a GitHub pull request is still required.</label>
+                <button type="button" class="btn primary" id="review-prepare">Prepare promotion proposal</button>
+              </div>
+              <div class="flow-group"><div class="flow-group-title"><strong>03 · Controlled publication</strong><span>No automatic merge</span></div>
+                <p class="muted">Export the proposal, run local validation, submit the proposed library entry through a GitHub pull request, and merge only after human review and CI. A packet is not a published applet.</p>
+                <code>npm run review:propose -- --packet candidate.review.json --reviewer "Reviewer Name" --note "I inspected both outputs" --acknowledge</code>
+              </div>
+            </div>
+            <div class="flow-output"><div id="review-status" class="notice" role="status" aria-live="polite">Create or import a candidate to begin.</div>
+              <div class="flow-toolbar-actions"><button type="button" class="btn secondary" id="review-download-packet" disabled>↓ Download review packet</button><button type="button" class="btn secondary" id="review-download-proposal" disabled>↓ Download promotion proposal</button></div>
+              <h3>Evidence &amp; checks</h3><pre class="codebox" id="review-evidence">No candidate loaded.</pre>
+              <details><summary>Full candidate review packet</summary><pre class="codebox" id="review-packet">No packet yet.</pre></details>
+              <details><summary>Promotion proposal</summary><pre class="codebox" id="review-proposal">Requires explicit local review acknowledgment.</pre></details>
             </div>
           </div>
         </section>
@@ -183,5 +215,6 @@
   <script type="module" src="./blueprint-ui.js"></script>
   <script type="module" src="./python-discovery-ui.js"></script>
   <script type="module" src="./universal-ui.js"></script>
+  <script type="module" src="./review-ui.js"></script>
 </body>
 </html>

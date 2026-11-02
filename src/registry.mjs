@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
 import { validateMacro } from './engine.mjs';
 import { validatePipeline } from './pipeline.mjs';
+import { validatePromotedEntry } from './review.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const libraryDir = join(root, 'library');
 
@@ -12,7 +13,8 @@ export function validateEntry(entry) {
   if (typeof entry.description !== 'string' || entry.description.length>300) throw new Error('Missing applet description');
   if(entry.kind==='macro') validateMacro(entry.config);
   else if(entry.kind==='pipeline') validatePipeline(entry.config);
-  else throw new Error('Only declarative macros and pipelines are supported');
+  else if(entry.kind==='universal-function') validatePromotedEntry(entry);
+  else throw new Error('Only reviewed declarative applets are supported');
   return entry;
 }
 

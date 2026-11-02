@@ -1,4 +1,4 @@
-# Applet Utility Development Kit (AUDK) — v0.6 working prototype
+# Applet Utility Development Kit (AUDK) — v0.7 working prototype
 
 **Build a function once. Configure it visually. Execute it as a macro. Export the code when needed.**
 
@@ -182,3 +182,17 @@ Local-only API additions: `GET /api/universal/functions` and `POST /api/universa
 The CI suite now covers curated example cases across JavaScript and Python, candidate validation, API contracts and navigation. The Python discovery snapshot still contains **354 discovered callables**, and the committed `library/` still contains **four published manifests**: these counts must not be combined. The eight recipes are *reviewed function templates*, not eight automatically installed library entries.
 
 Next: add candidate review workflow with versioning and provenance, optional whitelisted output composition, more curated Python functions, and capability-scoped external integrations. Never auto-merge generated code.
+
+## New in v0.7 — Applet Review & Promotion Desk
+
+**Live browser route:** `#review`. Configure an allowlisted function in the Universal Wizard, choose **Send to Review Desk**, or load a sample in the Review Desk. AUDK generates a versioned `audk.review.v1` packet containing candidate input, artifacts, interpreter test cases, provenance and SHA-256 fingerprints. It verifies the packet against a fresh deterministic regeneration, detecting modified code, test results, configuration or manifests.
+
+Reviewers can download the packet, inspect artifacts, and record a local acknowledgment with a name label and review notes. This generates an **unpublished promotion proposal**—not authenticated approval. The public site cannot write to GitHub or the library. Local-only API routes are `POST /api/review/packet`, `POST /api/review/verify` and `POST /api/review/proposal`.
+
+Two new CLI commands provide a deliberate offline workflow: `npm run review:propose` writes a proposal under `proposals/`, and `npm run review:stage` verifies it and writes a single registry-compatible `library/<id>.json` in a local working copy. Both require explicit flags. They neither push to GitHub nor bypass separate source review. `npm run check` now validates promoted pure-function applets and their candidate-manifest fingerprint.
+
+**Full release policy and commands:** [docs/REVIEW_AND_PROMOTION.md](docs/REVIEW_AND_PROMOTION.md).
+
+**Current inventory:** Four existing published registry applets, eight allowlisted universal function recipes, 354 Python discovery records. v0.7 does **not** automatically add new published applets or authenticate reviewers.
+
+**Next:** trusted maintainer PR review integration (no auto-merge), richer example coverage, cross-platform packaging, and more curated Python schemas.
